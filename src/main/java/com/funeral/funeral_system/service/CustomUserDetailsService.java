@@ -29,7 +29,8 @@ public class CustomUserDetailsService implements UserDetailsService {
             return User.builder()
                     .username(sysUser.get().getUsername())
                     .password(sysUser.get().getPassword())
-                    .roles(sysUser.get().getRole())
+                    // FIX: Use authorities() because DB already has "ROLE_ADMIN"
+                    .authorities(sysUser.get().getRole()) 
                     .build();
         }
 
