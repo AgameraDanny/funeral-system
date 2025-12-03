@@ -39,4 +39,7 @@ public class Funeral {
 
     @OneToMany(mappedBy = "funeral", cascade = CascadeType.ALL)
     private List<FuneralExpense> expenses = new ArrayList<>();
+
+    private BigDecimal societyBalanceBefore;
+    private BigDecimal societyBalanceAfter;
 }

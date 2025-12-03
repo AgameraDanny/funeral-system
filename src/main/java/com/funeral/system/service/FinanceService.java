@@ -62,14 +62,22 @@ public class FinanceService {
             totalCost = totalCost.add(item.getCost());
         }
 
+        // --- CHANGE START ---
+        
+        // Capture Balance BEFORE
+        BigDecimal balanceBefore = society.getCurrentBalance();
+
         // 2. Check Budget
-        if (society.getCurrentBalance().compareTo(request.getSocietyPays()) < 0) {
-            throw new RuntimeException("Insufficient Society Funds. Balance: " + society.getCurrentBalance());
+        if (balanceBefore.compareTo(request.getSocietyPays()) < 0) {
+            throw new RuntimeException("Insufficient Society Funds. Balance: " + balanceBefore);
         }
 
         // 3. Deduct from Society
-        society.setCurrentBalance(society.getCurrentBalance().subtract(request.getSocietyPays()));
+        BigDecimal balanceAfter = balanceBefore.subtract(request.getSocietyPays());
+        society.setCurrentBalance(balanceAfter);
         societyRepository.save(society);
+
+        // --- CHANGE END ---
 
         // 4. Update Member
         member.setDeceased(true);
@@ -87,6 +95,10 @@ public class FinanceService {
         funeral.setCemetery(request.getCemetery());
         funeral.setSpecialInstructions(request.getInstructions());
         funeral.setFuneralDate(LocalDateTime.now().plusDays(3));
+        
+        // SAVE HISTORY
+        funeral.setSocietyBalanceBefore(balanceBefore);
+        funeral.setSocietyBalanceAfter(balanceAfter);
 
         Funeral savedFuneral = funeralRepository.save(funeral);
 

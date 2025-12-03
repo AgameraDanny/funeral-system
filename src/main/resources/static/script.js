@@ -270,7 +270,10 @@ async function loadFuneralHistory() {
                 : 'Unknown';
             const societyName = f.society ? f.society.name : '-';
 
-            // Format expenses list for tooltip or alert
+            // Handle potential nulls for old records created before this update
+            const balBefore = f.societyBalanceBefore !== null ? `$${f.societyBalanceBefore.toFixed(2)}` : '-';
+            const balAfter = f.societyBalanceAfter !== null ? `$${f.societyBalanceAfter.toFixed(2)}` : '-';
+
             const expenseDetails = f.expenses 
                 ? f.expenses.map(e => `${e.itemName}: $${e.cost}`).join('\n') 
                 : 'No details';
@@ -282,6 +285,9 @@ async function loadFuneralHistory() {
                     <td>${societyName}</td>
                     <td>${f.graveNumber || '-'}</td>
                     <td style="font-weight:bold">$${f.totalCost.toFixed(2)}</td>
+                    <td style="color:green">$${f.paidBySociety.toFixed(2)}</td>
+                    <td style="color:#7f8c8d"><small>${balBefore}</small></td>
+                    <td style="color:#2c3e50; font-weight:bold">${balAfter}</td>
                     <td style="color:red">$${f.paidByFamily.toFixed(2)}</td>
                     <td>
                         <button onclick="alert('Expenses:\\n${expenseDetails}\\n\\nInstructions:\\n${f.specialInstructions || 'None'}')">

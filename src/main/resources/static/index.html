@@ -95,15 +95,15 @@
         <section id="funerals" class="hidden-section">
             <h2>Record Funeral Event</h2>
             
-            <div style="display: flex; gap: 20px;">
+            <!-- CHANGED: Replaced inline styles with CSS classes -->
+            <div class="funeral-layout">
+                
                 <!-- Left Side: Basic Info -->
-                <div style="flex: 1;">
+                <div class="form-column">
                     <form id="funeralForm">
                         <label>Select Deceased Member:</label>
-                        <!-- Added onchange event -->
                         <select id="funeralMemberSelect" onchange="updateSocietyBalanceDisplay()" required></select>
 
-                        <!-- NEW: Budget Display -->
                         <div class="info-box" id="budgetDisplay">
                             Society Balance: $0.00
                         </div>
@@ -112,11 +112,11 @@
                         <input type="number" id="societyPays" placeholder="0.00" required>
 
                         <div class="row">
-                            <div>
+                            <div class="input-group">
                                 <label>Grave Number:</label>
                                 <input type="text" id="graveNo">
                             </div>
-                            <div>
+                            <div class="input-group">
                                 <label>Cemetery:</label>
                                 <input type="text" id="cemetery">
                             </div>
@@ -128,31 +128,32 @@
                 </div>
 
                 <!-- Right Side: Expenses List -->
-                <div style="flex: 1; background: #f9f9f9; padding: 15px; border-radius: 8px;">
+                <div class="expense-column">
                     <h3>📝 Expense Items</h3>
                     
                     <div class="row">
-                        <input type="text" id="newItemName" placeholder="Item (e.g. Coffin)">
-                        <input type="number" id="newItemCost" placeholder="Cost" style="width: 100px;">
+                        <input type="text" id="newItemName" placeholder="Item (e.g. Coffin)" style="flex: 2;">
+                        <input type="number" id="newItemCost" placeholder="Cost" style="flex: 1;">
                         <button type="button" onclick="addExpenseItem()">Add</button>
                     </div>
 
-                    <table class="expense-table">
-                        <thead>
-                            <tr>
-                                <th>Item</th>
-                                <th>Cost</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="expenseListBody"></tbody>
-                    </table>
+                    <div class="table-wrapper" style="margin-top: 10px;">
+                        <table class="expense-table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Cost</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expenseListBody"></tbody>
+                        </table>
+                    </div>
 
                     <div class="total-row">
                         Total Cost: <span id="displayTotalCost">$0.00</span>
                     </div>
                     
-                    <!-- Move submit button here -->
                     <button type="button" onclick="submitFuneral()" class="danger-btn" style="width:100%; margin-top:20px;">
                         Process Funeral
                     </button>
@@ -229,6 +230,9 @@
                             <th>Society</th>
                             <th>Grave No</th>
                             <th>Total Cost</th>
+                            <th>Soc. Paid</th> <!-- New -->
+                            <th>Bal Before</th> <!-- New -->
+                            <th>Bal After</th>  <!-- New -->
                             <th>Family Pays</th>
                             <th>Details</th>
                         </tr>
