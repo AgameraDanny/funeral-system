@@ -1,9 +1,9 @@
-package com.funeral.funeral_system.entity;
+package com.funeral.system.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.math.BigDecimal;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Data
@@ -12,11 +12,11 @@ public class FuneralExpense {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String description; // e.g., "Round Casket", "Hearse"
-    private BigDecimal amount;  // Price
+    private String itemName;
+    private BigDecimal cost;
 
     @ManyToOne
     @JoinColumn(name = "funeral_id")
-    @JsonIgnore // <--- THIS STOPS THE INFINITE LOOP
+    @JsonIgnore // Prevent infinite loop in JSON
     private Funeral funeral;
 }

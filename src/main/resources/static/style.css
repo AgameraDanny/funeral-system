@@ -1,0 +1,214 @@
+:root {
+    --primary: #2c3e50;
+    --secondary: #27ae60;
+    --accent: #e74c3c;
+    --light: #ecf0f1;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    background-color: #f4f7f6;
+    color: #333;
+}
+
+header {
+    background-color: var(--primary);
+    color: white;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav button {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 8px 15px;
+    margin-left: 5px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+nav button:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+main {
+    max-width: 800px;
+    margin: 2rem auto;
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.hidden-section { display: none; }
+.active-section { display: block; animation: fadeIn 0.5s; }
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+input, select, textarea {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+button[type="submit"] {
+    background-color: var(--secondary);
+    color: white;
+    border: none;
+    padding: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+button.danger-btn {
+    background-color: var(--accent);
+}
+
+button:hover { opacity: 0.9; }
+
+/* Dashboard Cards */
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.card {
+    background: var(--light);
+    padding: 15px;
+    border-left: 5px solid var(--secondary);
+    border-radius: 4px;
+}
+
+.card h3 { margin: 0 0 10px 0; }
+.money { font-size: 1.5rem; font-weight: bold; color: var(--secondary); }
+
+/* Table Styling */
+.table-wrapper {
+    margin-top: 2rem;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+th {
+    background-color: var(--primary);
+    color: white;
+    font-weight: 600;
+}
+
+tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Status Badges */
+.badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+.badge-primary { background: #e3f2fd; color: #1565c0; }
+.badge-ben { background: #fff3e0; color: #ef6c00; }
+.badge-deceased { background: #ffebee; color: #c62828; }
+.badge-active { background: #e8f5e9; color: #2e7d32; }
+
+/* Header Row & Totals */
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background: #f8f9fa;
+    border-bottom: 2px solid #eee;
+}
+
+.totals-display {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--secondary);
+}
+
+/* Filters & Buttons */
+.filters {
+    padding: 10px;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+}
+
+.filters button {
+    background: #ddd;
+    color: #333;
+    padding: 5px 10px;
+    margin-right: 5px;
+    font-size: 0.9rem;
+}
+
+.back-btn {
+    background: #95a5a6;
+    margin-bottom: 1rem;
+}
+
+/* Info Box for Budget */
+.info-box {
+    background: #e1f5fe;
+    color: #0277bd;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    border: 1px solid #b3e5fc;
+}
+
+/* Expense Table */
+.expense-table {
+    width: 100%;
+    margin-top: 10px;
+    background: white;
+}
+
+.expense-table th { background: #eee; color: #333; }
+.expense-table td { border-bottom: 1px solid #ddd; }
+
+.total-row {
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: right;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 2px solid #333;
+}
+
+.remove-btn {
+    background: #ff5252;
+    padding: 2px 8px;
+    font-size: 12px;
+}
