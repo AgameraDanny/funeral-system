@@ -32,16 +32,75 @@
                 </div>
             </section>
 
-            <!-- ADD SOCIETY SECTION -->
+            <!-- ADD SOCIETY -->
             <section id="add-society" class="hidden-section">
                 <h2>Create New Society</h2>
                 <form id="societyForm">
                     <label>Society Name:</label>
                     <input type="text" id="societyName" required>
+                    
+                    <!-- NEW FIELD -->
+                    <label>Account Number:</label>
+                    <input type="text" id="societyAccNo" placeholder="e.g. 76545" required>
+                    
                     <label>Initial Balance:</label>
                     <input type="number" id="societyBalance" value="0">
                     <button type="submit">Create Society</button>
                 </form>
+            </section>
+
+            <!-- SOCIETY DETAILS & EDIT -->
+            <section id="society-details" class="hidden-section">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <button class="back-btn" onclick="showSection('dashboard')">← Back to Dashboard</button>
+                    <!-- NEW EDIT BUTTON -->
+                    <button class="action-btn" onclick="toggleEditSociety()">✏️ Edit Society Details</button>
+                </div>
+
+                <h2 id="detailTitle">Society Details</h2>
+                
+                <!-- NEW: EDIT FORM (Hidden by default) -->
+                <div id="editSocietyContainer" style="display:none; background:#eee; padding:15px; border-radius:8px; margin-bottom:20px;">
+                    <h3>Update Society Info</h3>
+                    <form id="updateSocietyForm">
+                        <input type="hidden" id="editSocietyId">
+                        <label>Name:</label>
+                        <input type="text" id="editSocietyName" required>
+                        <label>Account Number:</label>
+                        <input type="text" id="editSocietyAccNo" required>
+                        <button type="submit">Save Changes</button>
+                        <button type="button" class="danger-btn" onclick="toggleEditSociety()">Cancel</button>
+                    </form>
+                </div>
+
+                <!-- Members Table -->
+                <div class="table-wrapper">
+                    <div class="header-row"><h3>👥 Members List</h3></div>
+                    <table>
+                        <thead>
+                            <tr><th>ID</th><th>Name</th><th>Type</th><th>Linked To</th><th>Status</th></tr>
+                        </thead>
+                        <tbody id="membersTableBody"></tbody>
+                    </table>
+                </div>
+
+                <!-- Contributions Table -->
+                <div class="table-wrapper">
+                    <div class="header-row">
+                        <h3>💰 Contribution History</h3>
+                        <div class="totals-display">Total: <span id="totalContributions">0.00</span></div>
+                    </div>
+                    <div class="filters">
+                        Sort by: 
+                        <button onclick="sortContributions('date')">Date</button>
+                        <button onclick="sortContributions('name')">Name</button>
+                        <button onclick="sortContributions('amount')">Amount</button>
+                    </div>
+                    <table>
+                        <thead><tr><th>Date</th><th>Member</th><th>Amount</th><th>Notes</th><th>Action</th></tr></thead>
+                        <tbody id="contribTableBody"></tbody>
+                    </table>
+                </div>
             </section>
 
             <!-- ADD MEMBER SECTION -->
