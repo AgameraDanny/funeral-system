@@ -3,6 +3,7 @@ const API_BASE = '/api/admin';
 // Store current data globally for sorting
 let currentContributions = [];
 let currentSocietyId = null;
+let currentSocietyData = null;
 
 let memberBalanceMap = {}; // Stores { memberId: balance }
 let expenseItems = [];     // Stores current list of items
@@ -36,12 +37,12 @@ async function loadSocieties() {
         data.forEach(soc => {
             const div = document.createElement('div');
             div.className = 'card';
-            // Make card clickable
             div.onclick = () => viewSocietyDetails(soc);
             div.style.cursor = 'pointer';
             
             div.innerHTML = `
                 <h3>${soc.name}</h3>
+                <div style="font-size:0.9rem; color:#666;">Acc: ${soc.accountNumber || 'N/A'}</div>
                 <div class="money">R ${soc.currentBalance.toFixed(2)}</div>
                 <p>${soc.members ? soc.members.length : 0} Members</p>
                 <small style="color:blue">Click to view details</small>
@@ -57,8 +58,12 @@ async function loadSocieties() {
 // --- VIEW SOCIETY DETAILS ---
 async function viewSocietyDetails(society) {
     currentSocietyId = society.id;
+    currentSocietyData = society; // Save for Edit Form
     document.getElementById('detailTitle').innerText = society.name;
     
+    // Hide Edit form initially
+    document.getElementById('editSocietyContainer').style.display = 'none';
+
     // 1. Populate Members Table
     const memBody = document.getElementById('membersTableBody');
     memBody.innerHTML = '';
@@ -68,34 +73,21 @@ async function viewSocietyDetails(society) {
             const typeBadge = m.memberType === 'PRIMARY' 
                 ? '<span class="badge badge-primary">Primary</span>' 
                 : '<span class="badge badge-ben">Beneficiary</span>';
-            
             const statusBadge = m.deceased 
                 ? '<span class="badge badge-deceased">Deceased</span>' 
                 : '<span class="badge badge-active">Active</span>';
-
             const linkedName = m.primaryMember 
                 ? `${m.primaryMember.firstName} ${m.primaryMember.lastName}` 
                 : '-';
 
-            const row = `
-                <tr>
-                    <td>${m.idNumber}</td>
-                    <td>${m.firstName} ${m.lastName}</td>
-                    <td>${typeBadge}</td>
-                    <td>${linkedName}</td>
-                    <td>${statusBadge}</td>
-                </tr>
-            `;
-            memBody.innerHTML += row;
+            memBody.innerHTML += `<tr><td>${m.idNumber}</td><td>${m.firstName} ${m.lastName}</td><td>${typeBadge}</td><td>${linkedName}</td><td>${statusBadge}</td></tr>`;
         });
     } else {
         memBody.innerHTML = '<tr><td colspan="5">No members found.</td></tr>';
     }
 
-    // 2. Fetch and Populate Contributions
+    // 2. Fetch Contributions
     await loadSocietyContributions(society.id);
-
-    // Switch View
     showSection('society-details');
 }
 
@@ -105,9 +97,44 @@ async function loadSocietyContributions(societyId) {
     
     const res = await fetch(`${API_BASE}/contributions/society/${societyId}`);
     currentContributions = await res.json();
-    
     renderContributionsTable();
 }
+
+// --- EDIT SOCIETY LOGIC ---
+function toggleEditSociety() {
+    const container = document.getElementById('editSocietyContainer');
+    if (container.style.display === 'none') {
+        // Show form and populate values
+        document.getElementById('editSocietyId').value = currentSocietyData.id;
+        document.getElementById('editSocietyName').value = currentSocietyData.name;
+        document.getElementById('editSocietyAccNo').value = currentSocietyData.accountNumber || '';
+        container.style.display = 'block';
+    } else {
+        container.style.display = 'none';
+    }
+}
+
+document.getElementById('updateSocietyForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('editSocietyId').value;
+    const payload = {
+        name: document.getElementById('editSocietyName').value,
+        accountNumber: document.getElementById('editSocietyAccNo').value
+    };
+
+    const res = await fetch(`${API_BASE}/society/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+        alert('Society Updated Successfully!');
+        showSection('dashboard'); // Reload to see changes
+    } else {
+        alert('Error updating society');
+    }
+});
 
 function renderContributionsTable() {
     const tbody = document.getElementById('contribTableBody');
@@ -117,25 +144,18 @@ function renderContributionsTable() {
     if(currentContributions.length === 0) {
         tbody.innerHTML = '<tr><td colspan="5">No contributions recorded.</td></tr>';
     } else {
-        // Sort by newest by default if not sorted
         currentContributions.sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate));
 
         currentContributions.forEach(c => {
             total += c.amount;
             const dateStr = new Date(c.paymentDate).toLocaleDateString();
-            
-            // We pass the ID to the print function
             tbody.innerHTML += `
                 <tr>
                     <td>${dateStr}</td>
                     <td>${c.member.firstName} ${c.member.lastName}</td>
                     <td>R ${c.amount.toFixed(2)}</td>
                     <td>${c.notes || '-'}</td>
-                    <td>
-                        <button class="action-btn" style="padding:5px 10px; font-size:12px;" onclick="printHistoricalReceipt(${c.id})">
-                            🖨️ Print
-                        </button>
-                    </td>
+                    <td><button class="action-btn" style="padding:5px 10px; font-size:12px;" onclick="printHistoricalReceipt(${c.id})">🖨️ Print</button></td>
                 </tr>`;
         });
     }
@@ -176,28 +196,23 @@ document.getElementById('contributionForm').addEventListener('submit', async (e)
 
 // 3. The Master Function that fills the HTML and triggers print
 function generateReceipt(contribution) {
-    // Populate Receipt Data
     document.getElementById('recNo').innerText = contribution.id;
     
-    // Format Date (YYYY/MM/DD)
+    // Account Number
+    document.getElementById('recAccNo').innerText = contribution.society.accountNumber || "N/A";
+
     const dateObj = new Date(contribution.paymentDate);
     document.getElementById('recDate').innerText = dateObj.toLocaleDateString();
     
     document.getElementById('recSociety').innerText = contribution.society.name;
     document.getElementById('recMember').innerText = `${contribution.member.firstName} ${contribution.member.lastName}`;
     document.getElementById('recAmount').innerText = `R ${contribution.amount.toFixed(2)}`;
-    
-    // Balance
     document.getElementById('recBalance').innerText = `R ${contribution.society.currentBalance.toFixed(2)}`;
-
-    // Words
     document.getElementById('recWords').innerText = numberToWords(contribution.amount) + " Rands Only";
 
-    // Trigger Print
-    setTimeout(() => {
-        window.print();
-    }, 200);
+    setTimeout(() => { window.print(); }, 200);
 }
+
 
 // --- Sorting Logic ---
 function sortContributions(criteria) {
@@ -218,6 +233,7 @@ document.getElementById('societyForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const payload = {
         name: document.getElementById('societyName').value,
+        accountNumber: document.getElementById('societyAccNo').value, // NEW
         currentBalance: document.getElementById('societyBalance').value
     };
     const res = await fetch(`${API_BASE}/society`, {

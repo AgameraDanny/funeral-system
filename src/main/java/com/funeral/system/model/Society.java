@@ -16,6 +16,8 @@ public class Society {
 
     private String name;
 
+    private String accountNumber;
+
     // The current pool of money available for this society
     private BigDecimal currentBalance = BigDecimal.ZERO;
 

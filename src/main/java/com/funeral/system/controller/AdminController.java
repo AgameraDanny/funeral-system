@@ -40,6 +40,19 @@ public class AdminController {
         return societyRepository.findAll();
     }
 
+    // --- UPDATE SOCIETY (For adding Account Numbers to existing records) ---
+    @PutMapping("/society/{id}")
+    public Society updateSociety(@PathVariable Long id, @RequestBody Society societyDetails) {
+        Society society = societyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Society not found"));
+        
+        society.setName(societyDetails.getName());
+        society.setAccountNumber(societyDetails.getAccountNumber());
+        // We do not update balance here manually to prevent fraud
+        
+        return societyRepository.save(society);
+    }
+
     // --- MEMBER MANAGEMENT ---
 
     @PostMapping("/member")
