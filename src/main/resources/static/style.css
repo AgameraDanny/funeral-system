@@ -303,3 +303,69 @@ tr:hover { background-color: #f1f1f1; }
         width: 100%;
     }
 }
+
+/* =========================================
+   🖨️ RECEIPT PRINTING STYLES
+   ========================================= */
+
+/* 1. Hide Receipt on Screen by default */
+#receipt-print-area {
+    display: none;
+}
+
+/* 2. When Printing, Hide App and Show Receipt */
+@media print {
+    /* Hide the Dashboard/Website */
+    #screen-content {
+        display: none !important;
+    }
+
+    /* Show Receipt Area */
+    #receipt-print-area {
+        display: block !important;
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+    }
+
+    /* 3. Style to match the Boikanyo Image */
+    .receipt-box {
+        width: 100%;
+        max-width: 600px;
+        margin: 20px auto;
+        border: 2px solid #333; /* The thick border */
+        padding: 20px;
+        font-family: 'Courier New', Courier, monospace; /* Typewriter font */
+        color: black;
+    }
+
+    .receipt-header {
+        text-align: center;
+        border-bottom: 2px solid #333;
+        margin-bottom: 10px;
+    }
+
+    .receipt-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border: 1px solid #333;
+    }
+
+    .grid-box {
+        border: 1px solid #333;
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    .full-width { grid-column: span 2; }
+
+    .balance-box {
+        border: 2px solid #333;
+        padding: 5px 15px;
+        font-weight: bold;
+        display: inline-block;
+        margin-left: 10px;
+    }
+}

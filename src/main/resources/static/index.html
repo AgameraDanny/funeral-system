@@ -7,244 +7,300 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="screen-content">
 
-    <header>
-        <h1>⚰️ Funeral Management System</h1>
-        <nav>
-            <button onclick="showSection('dashboard')">Dashboard</button>
-            <button onclick="showSection('add-society')">Add Society</button>
-            <button onclick="showSection('add-member')">Add Member</button>
-            <button onclick="showSection('contributions')">Contributions</button>
-            <button onclick="showSection('funerals')">Record Funeral</button>
-            <button onclick="showSection('history')">Funeral History</button>
-        </nav>
-    </header>
+        <header>
+            <h1>⚰️ Funeral Management System</h1>
+            <nav>
+                <button onclick="showSection('dashboard')">Dashboard</button>
+                <button onclick="showSection('add-society')">Add Society</button>
+                <button onclick="showSection('add-member')">Add Member</button>
+                <button onclick="showSection('contributions')">Contributions</button>
+                <button onclick="showSection('funerals')">Record Funeral</button>
+                <button onclick="showSection('history')">Funeral History</button>
+            </nav>
+        </header>
 
-    <main id="app">
-        
-        <!-- DASHBOARD SECTION -->
-        <section id="dashboard" class="active-section">
-            <h2>Society Overview</h2>
-            <div id="society-cards" class="card-container">
-                <!-- Society cards injected by JS -->
-                <p>Loading societies...</p>
-            </div>
-        </section>
-
-        <!-- ADD SOCIETY SECTION -->
-        <section id="add-society" class="hidden-section">
-            <h2>Create New Society</h2>
-            <form id="societyForm">
-                <label>Society Name:</label>
-                <input type="text" id="societyName" required>
-                <label>Initial Balance:</label>
-                <input type="number" id="societyBalance" value="0">
-                <button type="submit">Create Society</button>
-            </form>
-        </section>
-
-        <!-- ADD MEMBER SECTION -->
-        <section id="add-member" class="hidden-section">
-            <h2>Register Member</h2>
-            <form id="memberForm">
-                <label>First Name:</label>
-                <input type="text" id="memFirstName" required>
-                
-                <label>Last Name:</label>
-                <input type="text" id="memLastName" required>
-
-                <label>ID Number:</label>
-                <input type="text" id="memIdNumber" required>
-
-                <label>Society:</label>
-                <select id="memSocietySelect" required></select>
-
-                <label>Member Type:</label>
-                <select id="memType" onchange="togglePrimaryMemberSelect()">
-                    <option value="PRIMARY">Primary Member</option>
-                    <option value="BENEFICIARY">Beneficiary</option>
-                </select>
-
-                <div id="primaryMemberDiv" style="display:none;">
-                    <label>Linked Primary Member:</label>
-                    <select id="linkedPrimaryMember"></select>
-                </div>
-
-                <button type="submit">Register Member</button>
-            </form>
-        </section>
-
-        <!-- CONTRIBUTIONS SECTION -->
-        <section id="contributions" class="hidden-section">
-            <h2>Record Monthly Contribution</h2>
-            <form id="contributionForm">
-                <label>Select Member (Primary Only):</label>
-                <select id="contribMemberSelect" required></select>
-                
-                <label>Amount:</label>
-                <input type="number" id="contribAmount" value="100.00" required>
-                
-                <label>Notes (Month/Year):</label>
-                <input type="text" id="contribNotes" placeholder="e.g. Jan 2025">
-
-                <button type="submit">Record Payment</button>
-            </form>
-        </section>
-
-        <!-- FUNERALS SECTION -->
-        <section id="funerals" class="hidden-section">
-            <h2>Record Funeral Event</h2>
+        <main id="app">
             
-            <!-- CHANGED: Replaced inline styles with CSS classes -->
-            <div class="funeral-layout">
+            <!-- DASHBOARD SECTION -->
+            <section id="dashboard" class="active-section">
+                <h2>Society Overview</h2>
+                <div id="society-cards" class="card-container">
+                    <!-- Society cards injected by JS -->
+                    <p>Loading societies...</p>
+                </div>
+            </section>
+
+            <!-- ADD SOCIETY SECTION -->
+            <section id="add-society" class="hidden-section">
+                <h2>Create New Society</h2>
+                <form id="societyForm">
+                    <label>Society Name:</label>
+                    <input type="text" id="societyName" required>
+                    <label>Initial Balance:</label>
+                    <input type="number" id="societyBalance" value="0">
+                    <button type="submit">Create Society</button>
+                </form>
+            </section>
+
+            <!-- ADD MEMBER SECTION -->
+            <section id="add-member" class="hidden-section">
+                <h2>Register Member</h2>
+                <form id="memberForm">
+                    <label>First Name:</label>
+                    <input type="text" id="memFirstName" required>
+                    
+                    <label>Last Name:</label>
+                    <input type="text" id="memLastName" required>
+
+                    <label>ID Number:</label>
+                    <input type="text" id="memIdNumber" required>
+
+                    <label>Society:</label>
+                    <select id="memSocietySelect" required></select>
+
+                    <label>Member Type:</label>
+                    <select id="memType" onchange="togglePrimaryMemberSelect()">
+                        <option value="PRIMARY">Primary Member</option>
+                        <option value="BENEFICIARY">Beneficiary</option>
+                    </select>
+
+                    <div id="primaryMemberDiv" style="display:none;">
+                        <label>Linked Primary Member:</label>
+                        <select id="linkedPrimaryMember"></select>
+                    </div>
+
+                    <button type="submit">Register Member</button>
+                </form>
+            </section>
+
+            <!-- CONTRIBUTIONS SECTION -->
+            <section id="contributions" class="hidden-section">
+                <h2>Record Monthly Contribution</h2>
+                <form id="contributionForm">
+                    <label>Select Member (Primary Only):</label>
+                    <select id="contribMemberSelect" required></select>
+                    
+                    <label>Amount:</label>
+                    <input type="number" id="contribAmount" value="100.00" required>
+                    
+                    <label>Notes (Month/Year):</label>
+                    <input type="text" id="contribNotes" placeholder="e.g. Jan 2025">
+
+                    <button type="submit">Record Payment</button>
+                </form>
+            </section>
+
+            <!-- FUNERALS SECTION -->
+            <section id="funerals" class="hidden-section">
+                <h2>Record Funeral Event</h2>
                 
-                <!-- Left Side: Basic Info -->
-                <div class="form-column">
-                    <form id="funeralForm">
-                        <label>Select Deceased Member:</label>
-                        <select id="funeralMemberSelect" onchange="updateSocietyBalanceDisplay()" required></select>
+                <!-- CHANGED: Replaced inline styles with CSS classes -->
+                <div class="funeral-layout">
+                    
+                    <!-- Left Side: Basic Info -->
+                    <div class="form-column">
+                        <form id="funeralForm">
+                            <label>Select Deceased Member:</label>
+                            <select id="funeralMemberSelect" onchange="updateSocietyBalanceDisplay()" required></select>
 
-                        <div class="info-box" id="budgetDisplay">
-                            Society Balance: R 0.00
-                        </div>
+                            <div class="info-box" id="budgetDisplay">
+                                Society Balance: R 0.00
+                            </div>
 
-                        <label>Amount Covered by Society:</label>
-                        <input type="number" id="societyPays" placeholder="0.00" required>
+                            <label>Amount Covered by Society:</label>
+                            <input type="number" id="societyPays" placeholder="0.00" required>
 
+                            <div class="row">
+                                <div class="input-group">
+                                    <label>Grave Number:</label>
+                                    <input type="text" id="graveNo">
+                                </div>
+                                <div class="input-group">
+                                    <label>Cemetery:</label>
+                                    <input type="text" id="cemetery">
+                                </div>
+                            </div>
+
+                            <label>Special Instructions:</label>
+                            <textarea id="instructions" rows="3"></textarea>
+                        </form>
+                    </div>
+
+                    <!-- Right Side: Expenses List -->
+                    <div class="expense-column">
+                        <h3>📝 Expense Items</h3>
+                        
                         <div class="row">
-                            <div class="input-group">
-                                <label>Grave Number:</label>
-                                <input type="text" id="graveNo">
-                            </div>
-                            <div class="input-group">
-                                <label>Cemetery:</label>
-                                <input type="text" id="cemetery">
-                            </div>
+                            <input type="text" id="newItemName" placeholder="Item (e.g. Coffin)" style="flex: 2;">
+                            <input type="number" id="newItemCost" placeholder="Cost" style="flex: 1;">
+                            <button type="button" onclick="addExpenseItem()">Add</button>
                         </div>
 
-                        <label>Special Instructions:</label>
-                        <textarea id="instructions" rows="3"></textarea>
-                    </form>
-                </div>
+                        <div class="table-wrapper" style="margin-top: 10px;">
+                            <table class="expense-table">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Cost</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="expenseListBody"></tbody>
+                            </table>
+                        </div>
 
-                <!-- Right Side: Expenses List -->
-                <div class="expense-column">
-                    <h3>📝 Expense Items</h3>
-                    
-                    <div class="row">
-                        <input type="text" id="newItemName" placeholder="Item (e.g. Coffin)" style="flex: 2;">
-                        <input type="number" id="newItemCost" placeholder="Cost" style="flex: 1;">
-                        <button type="button" onclick="addExpenseItem()">Add</button>
+                        <div class="total-row">
+                            Total Cost: <span id="displayTotalCost">R 0.00</span>
+                        </div>
+                        
+                        <button type="button" onclick="submitFuneral()" class="danger-btn" style="width:100%; margin-top:20px;">
+                            Process Funeral
+                        </button>
                     </div>
-
-                    <div class="table-wrapper" style="margin-top: 10px;">
-                        <table class="expense-table">
-                            <thead>
-                                <tr>
-                                    <th>Item</th>
-                                    <th>Cost</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="expenseListBody"></tbody>
-                        </table>
-                    </div>
-
-                    <div class="total-row">
-                        Total Cost: <span id="displayTotalCost">R 0.00</span>
-                    </div>
-                    
-                    <button type="button" onclick="submitFuneral()" class="danger-btn" style="width:100%; margin-top:20px;">
-                        Process Funeral
-                    </button>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <section id="society-details" class="hidden-section">
-            <button class="back-btn" onclick="showSection('dashboard')">← Back to Dashboard</button>
-            
-            <h2 id="detailTitle">Society Details</h2>
-            
-            <!-- Members Table -->
-            <div class="table-wrapper">
-                <div class="header-row">
-                    <h3>👥 Members List</h3>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Type</th>
-                            <th>Linked To</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="membersTableBody">
-                        <!-- Rows injected by JS -->
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Contributions Table -->
-            <div class="table-wrapper">
-                <div class="header-row">
-                    <h3>💰 Contribution History</h3>
-                    <div class="totals-display">Total: <span id="totalContributions">0.00</span></div>
-                </div>
+            <section id="society-details" class="hidden-section">
+                <button class="back-btn" onclick="showSection('dashboard')">← Back to Dashboard</button>
                 
-                <!-- Sorting Controls -->
-                <div class="filters">
-                    Sort by: 
-                    <button onclick="sortContributions('date')">Date</button>
-                    <button onclick="sortContributions('name')">Member Name</button>
-                    <button onclick="sortContributions('amount')">Amount</button>
+                <h2 id="detailTitle">Society Details</h2>
+                
+                <!-- Members Table -->
+                <div class="table-wrapper">
+                    <div class="header-row">
+                        <h3>👥 Members List</h3>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Linked To</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="membersTableBody">
+                            <!-- Rows injected by JS -->
+                        </tbody>
+                    </table>
                 </div>
 
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Member</th>
-                            <th>Amount</th>
-                            <th>Notes (Month/Year)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="contribTableBody">
-                        <!-- Rows injected by JS -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
+                <!-- Contributions Table -->
+                <div class="table-wrapper">
+                    <div class="header-row">
+                        <h3>💰 Contribution History</h3>
+                        <div class="totals-display">Total: <span id="totalContributions">0.00</span></div>
+                    </div>
+                    
+                    <!-- Sorting Controls -->
+                    <div class="filters">
+                        Sort by: 
+                        <button onclick="sortContributions('date')">Date</button>
+                        <button onclick="sortContributions('name')">Member Name</button>
+                        <button onclick="sortContributions('amount')">Amount</button>
+                    </div>
 
-        <!-- FUNERAL HISTORY SECTION -->
-        <section id="history" class="hidden-section">
-            <h2>⚱️ Funeral History</h2>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Deceased</th>
-                            <th>Society</th>
-                            <th>Grave No</th>
-                            <th>Total Cost</th>
-                            <th>Soc. Paid</th> <!-- New -->
-                            <th>Bal Before</th> <!-- New -->
-                            <th>Bal After</th>  <!-- New -->
-                            <th>Family Pays</th>
-                            <th>Details</th>
-                        </tr>
-                    </thead>
-                    <tbody id="funeralHistoryBody">
-                        <!-- Rows injected by JS -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Member</th>
+                                <th>Amount</th>
+                                <th>Notes (Month/Year)</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contribTableBody">
+                            <!-- Rows injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
-    </main>
+            <!-- FUNERAL HISTORY SECTION -->
+            <section id="history" class="hidden-section">
+                <h2>⚱️ Funeral History</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Deceased</th>
+                                <th>Society</th>
+                                <th>Grave No</th>
+                                <th>Total Cost</th>
+                                <th>Soc. Paid</th> <!-- New -->
+                                <th>Bal Before</th> <!-- New -->
+                                <th>Bal After</th>  <!-- New -->
+                                <th>Family Pays</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="funeralHistoryBody">
+                            <!-- Rows injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+
+    </div>
+
+    <!-- ============================================== -->
+    <!--  RECEIPT TEMPLATE (Hidden on screen, Visible on Print) -->
+    <!-- ============================================== -->
+    <div id="receipt-print-area">
+        <div class="receipt-box">
+            <div class="receipt-header">
+                <h2>Boikanyo's Funeral Home</h2>
+                <h3>Society Savings Receipt</h3>
+            </div>
+            
+            <div class="receipt-grid">
+                <div class="grid-box">
+                    <strong>Receipt No:</strong> <span id="recNo">---</span>
+                </div>
+                <div class="grid-box">
+                    <strong>Payment:</strong> Cash
+                </div>
+                <div class="grid-box full-width">
+                    <strong>Date:</strong> <span id="recDate">---</span>
+                </div>
+                <div class="grid-box full-width">
+                    <strong>Society:</strong> <span id="recSociety">---</span>
+                </div>
+                <div class="grid-box full-width">
+                    <strong>Member:</strong> <span id="recMember">---</span>
+                </div>
+                <div class="grid-box">
+                    <strong>Amt:</strong> <span id="recAmount">R 0.00</span>
+                </div>
+                <div class="grid-box">
+                    <strong>Type:</strong> Cash
+                </div>
+                <div class="grid-box full-width words-box">
+                    <span id="recWords">Zero Rands Only</span>
+                </div>
+            </div>
+
+            <div class="receipt-footer">
+                <div class="balance-row">
+                    <strong>Acc Balance:</strong>
+                    <div class="balance-box" id="recBalance">R 0.00</div>
+                </div>
+                <div class="company-details">
+                    <p>Tel: 0122510000 Fax: 0122510990</p>
+                    <p>1409 Zone 15 Industrial Site Lethabile</p>
+                    <p>Company Reg: CK1997/031585/23</p>
+                    <p>FSB: 3886 VAT: 4830120558</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
