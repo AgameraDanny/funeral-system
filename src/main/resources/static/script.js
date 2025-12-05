@@ -502,6 +502,10 @@ async function submitFuneral() {
     const payload = {
         memberId: parseInt(memberId),
         societyPays: societyPays,
+
+        sex: document.getElementById('fSex').value,
+        dateOfBirth: document.getElementById('fDob').value,
+        address: document.getElementById('fAddress').value,
         
         // New Fields
         branchCode: document.getElementById('fBranch').value,
@@ -646,7 +650,8 @@ function printGreenForm(funeralId) {
         document.getElementById('gfFirstNames').innerText = f.deceasedMember.firstName;
         document.getElementById('gfIdNo').innerText = f.deceasedMember.idNumber;
         document.getElementById('gfAddress').innerText = f.deceasedMember.address || '';
-        document.getElementById('gfSex').innerText = "N/A"; // Assuming sex isn't in Member yet
+        document.getElementById('gfSex').innerText = f.deceasedMember.sex || ''; 
+        document.getElementById('gfDob').innerText = f.deceasedMember.dateOfBirth || ''; 
     }
 
     // Fill Funeral Details
@@ -805,6 +810,21 @@ function printGreenForm(funeralId) {
         window.print(); 
         document.getElementById('green-form-print-area').classList.remove('print-active');
     }, 200);
+}
+
+// Add this to script.js
+async function fetchMemberDetailsForFuneral() {
+    const memId = document.getElementById('funeralMemberSelect').value;
+    updateSocietyBalanceDisplay(); // Call existing balance check
+
+    if(!memId) return;
+
+    // We need an endpoint to get single member. 
+    // Assuming you don't have one, we can iterate the societies list again 
+    // (not efficient but works with current setup) or add GET /member/{id}
+    
+    // Quick fix using existing loaded data if possible, or leave blank for user to fill.
+    // If you added GET /api/admin/member/{id} to backend, call it here.
 }
 
 // --- HELPER: Number to Words ---

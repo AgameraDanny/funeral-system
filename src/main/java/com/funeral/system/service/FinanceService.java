@@ -72,6 +72,16 @@ public class FinanceService {
         society.setCurrentBalance(balanceAfter);
         societyRepository.save(society);
 
+        if (request.getSex() != null && !request.getSex().isEmpty()) {
+            member.setSex(request.getSex());
+        }
+        if (request.getDateOfBirth() != null) {
+            member.setDateOfBirth(request.getDateOfBirth());
+        }
+        if (request.getAddress() != null && !request.getAddress().isEmpty()) {
+            member.setAddress(request.getAddress());
+        }
+
         member.setDeceased(true);
         member.setDateOfDeath(request.getDateOfDeath() != null ? request.getDateOfDeath() : LocalDate.now());
         memberRepository.save(member);

@@ -33,6 +33,7 @@ public class Member {
     private Society society;
 
     private LocalDate dateOfBirth;
+    private String sex; 
     
     // To track if they have passed away
     private boolean isDeceased = false;

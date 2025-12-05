@@ -177,13 +177,26 @@
                                     <input type="text" id="fCountry" placeholder="Country" value="R.S.A">
                                 </div>
                                 <div class="row">
-                                    <input type="text" id="fOccupation" placeholder="Occupation">
+                                    <!-- NEW: Sex & Marital Status -->
+                                    <select id="fSex">
+                                        <option value="">Select Sex</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
                                     <select id="fMarital">
                                         <option value="Single">Single</option>
                                         <option value="Married">Married</option>
                                         <option value="Widowed">Widowed</option>
                                     </select>
                                 </div>
+                                <div class="row">
+                                    <div class="input-group">
+                                        <label style="font-size:12px">Date of Birth</label>
+                                        <input type="date" id="fDob">
+                                    </div>
+                                    <input type="text" id="fOccupation" placeholder="Occupation">
+                                </div>
+                                <input type="text" id="fAddress" placeholder="Residential Address">
                                 <div class="row">
                                     <div class="input-group">
                                         <label style="font-size:12px">Date of Death</label>

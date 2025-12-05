@@ -37,6 +37,9 @@ public class FuneralRequest {
     private boolean hearseRequired;
     private boolean mournersCarRequired;
     private String instructions;
+    private String sex;
+    private LocalDate dateOfBirth;
+    private String address; // To ensure we can update address from the form
 
     @Data
     public static class ExpenseItem {
