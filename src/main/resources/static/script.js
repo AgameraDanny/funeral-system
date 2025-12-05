@@ -214,20 +214,20 @@ document.getElementById('contributionForm').addEventListener('submit', async (e)
 
 //     setTimeout(() => { window.print(); }, 200);
 // }
+// 1. Contribution Receipt (Existing)
 function generateReceipt(contribution) {
-    // 1. Account & Receipt No
+    // Set Active Template
+    document.getElementById('receipt-print-area').classList.add('print-active');
+    document.getElementById('funeral-print-area').classList.remove('print-active');
+
+    // Fill Data
     document.getElementById('recNo').innerText = contribution.id;
     document.getElementById('recAccNo').innerText = contribution.society.accountNumber || "N/A";
-
-    // 2. Payment Method (This was causing the crash if ID was missing)
-    const method = contribution.paymentMethod || "Cash";
-    const recMethodSpan = document.getElementById('recMethod');
-    if (recMethodSpan) recMethodSpan.innerText = method;
     
-    const recTypeSpan = document.getElementById('recType');
-    if (recTypeSpan) recTypeSpan.innerText = method;
+    const method = contribution.paymentMethod || "Cash";
+    document.getElementById('recMethod').innerText = method;
+    document.getElementById('recType').innerText = method;
 
-    // 3. Details
     const dateObj = new Date(contribution.paymentDate);
     document.getElementById('recDate').innerText = dateObj.toLocaleDateString();
     
@@ -237,12 +237,15 @@ function generateReceipt(contribution) {
     document.getElementById('recBalance').innerText = `R ${contribution.society.currentBalance.toFixed(2)}`;
     document.getElementById('recWords').innerText = numberToWords(contribution.amount) + " Rands Only";
 
-    // 4. Print
-    setTimeout(() => { window.print(); }, 200);
+    // Print
+    setTimeout(() => { 
+        window.print(); 
+        // Cleanup class after print dialog closes (optional but good practice)
+        document.getElementById('receipt-print-area').classList.remove('print-active');
+    }, 200);
 }
 
-
-// --- FUNERAL HISTORY (FIXED) ---
+// --- FUNERAL HISTORY ---
 async function loadFuneralHistory() {
     const tbody = document.getElementById('funeralHistoryBody');
     tbody.innerHTML = '<tr><td colspan="10">Loading...</td></tr>';
@@ -250,21 +253,29 @@ async function loadFuneralHistory() {
         const res = await fetch(`${API_BASE}/funerals`);
         const funerals = await res.json();
         
-        // 4. SAVE TO GLOBAL VARIABLE (Fixes the button issue)
+        // Save to global variable for button clicks
         currentFuneralHistory = funerals;
 
         tbody.innerHTML = '';
-        if (funerals.length === 0) { tbody.innerHTML = '<tr><td colspan="10">No history.</td></tr>'; return; }
+        if (funerals.length === 0) { 
+            tbody.innerHTML = '<tr><td colspan="10">No history.</td></tr>'; 
+            return; 
+        }
         
         funerals.sort((a, b) => new Date(b.funeralDate) - new Date(a.funeralDate));
         
         funerals.forEach(f => {
             const dateStr = new Date(f.funeralDate).toLocaleDateString();
-            const memberName = f.deceasedMember ? `${f.deceasedMember.firstName} ${f.deceasedMember.lastName}` : 'Unknown';
+            
+            // Check if deceasedMember exists to prevent crashes
+            const memberName = f.deceasedMember 
+                ? `${f.deceasedMember.firstName} ${f.deceasedMember.lastName}` 
+                : 'Unknown';
+                
             const balBefore = f.societyBalanceBefore !== null ? `R ${f.societyBalanceBefore.toFixed(2)}` : '-';
             const balAfter = f.societyBalanceAfter !== null ? `R ${f.societyBalanceAfter.toFixed(2)}` : '-';
             
-            // 5. CALL FUNCTION instead of inline alert (Fixes SyntaxError)
+            // FIXED TEMPLATE STRING BELOW
             tbody.innerHTML += `<tr>
                 <td>${dateStr}</td>
                 <td>${memberName}</td>
@@ -275,10 +286,18 @@ async function loadFuneralHistory() {
                 <td style="color:#7f8c8d"><small>${balBefore}</small></td>
                 <td style="color:#2c3e50; font-weight:bold">${balAfter}</td>
                 <td style="color:red">R ${f.paidByFamily.toFixed(2)}</td>
-                <td><button class="action-btn" style="padding:2px 8px; font-size:12px;" onclick="viewFuneralDetails(${f.id})">Items</button></td>
+                <td style="display:flex; gap:3px;">
+                    <button class="action-btn" title="View Items" style="padding:2px 5px;" onclick="viewFuneralDetails(${f.id})">🔍</button>
+                    <button class="action-btn" title="Statement" style="padding:2px 5px;" onclick="printFuneralReceipt(${f.id})">🧾</button>
+                    <button class="action-btn" title="Green Form" style="padding:2px 5px;" onclick="printGreenForm(${f.id})">📄</button>
+                    <button class="action-btn" title="Edit Info" style="padding:2px 5px; background:#f39c12;" onclick="openEditFuneralModal(${f.id})">✏️</button>
+                </td>
             </tr>`;
         });
-    } catch (e) { console.error(e); }
+    } catch (e) { 
+        console.error(e); 
+        tbody.innerHTML = '<tr><td colspan="10">Error loading history.</td></tr>';
+    }
 }
 
 // 6. NEW FUNCTION TO SHOW DETAILS SAFELY
@@ -468,9 +487,12 @@ function renderExpenseTable() {
 }
 
 // --- Funeral: Final Submission ---
+// ... existing variable declarations ...
+
+// Update submitFuneral to gather all new inputs
 async function submitFuneral() {
     const memberId = document.getElementById('funeralMemberSelect').value;
-    const societyPays = document.getElementById('societyPays').value;
+    const societyPays = parseFloat(document.getElementById('societyPays').value) || 0;
 
     if(!memberId || expenseItems.length === 0) {
         alert('Please select a member and add at least one expense.');
@@ -479,11 +501,34 @@ async function submitFuneral() {
 
     const payload = {
         memberId: parseInt(memberId),
-        societyPays: parseFloat(societyPays) || 0, // Handle empty input safely
-        graveNo: document.getElementById('graveNo').value,
-        cemetery: document.getElementById('cemetery').value,
-        instructions: document.getElementById('instructions').value,
-        items: expenseItems // Send the list
+        societyPays: societyPays,
+        
+        // New Fields
+        branchCode: document.getElementById('fBranch').value,
+        countryOfBirth: document.getElementById('fCountry').value,
+        occupation: document.getElementById('fOccupation').value,
+        maritalStatus: document.getElementById('fMarital').value,
+        dateOfDeath: document.getElementById('fDateDeath').value,
+        placeOfDeath: document.getElementById('fPlaceDeath').value,
+        causeOfDeath: document.getElementById('fCause').value,
+        doctorName: document.getElementById('fDoctor').value,
+        nextOfKin: document.getElementById('fNextKin').value,
+        
+        dateOfBurial: document.getElementById('fDateBurial').value,
+        timeOfBurial: document.getElementById('fTimeBurial').value,
+        religion: document.getElementById('fReligion').value,
+        minister: document.getElementById('fMinister').value,
+        funeralVenue: document.getElementById('fVenue').value,
+        placeOfBurial: document.getElementById('fPlaceBurial').value,
+        
+        graveNo: document.getElementById('fGraveNo').value,
+        graveType: document.getElementById('fGraveType').value,
+        cemetery: document.getElementById('fCemetery').value,
+        hearseRequired: document.getElementById('fHearse').checked,
+        mournersCarRequired: document.getElementById('fCar').checked,
+        
+        instructions: document.getElementById('fInstructions').value,
+        items: expenseItems
     };
 
     const res = await fetch(`${API_BASE}/funeral`, {
@@ -494,16 +539,272 @@ async function submitFuneral() {
 
     if (res.ok) {
         alert('Funeral Processed Successfully!');
-        // Reset form
-        expenseItems = [];
-        renderExpenseTable();
-        document.getElementById('funeralForm').reset();
+        expenseItems = []; renderExpenseTable(); document.getElementById('funeralForm').reset();
         document.getElementById('budgetDisplay').innerText = 'Society Balance: R 0.00';
         showSection('dashboard');
     } else {
         const txt = await res.text();
         alert('Error: ' + txt);
     }
+}
+
+
+// --- NEW: EDIT FUNERAL MODAL LOGIC ---
+
+function openEditFuneralModal(funeralId) {
+    const f = currentFuneralHistory.find(x => x.id === funeralId);
+    if (!f) return;
+
+    // Populate Fields
+    document.getElementById('editFunId').value = f.id;
+    document.getElementById('efBranch').value = f.branchCode || '';
+    document.getElementById('efCountry').value = f.countryOfBirth || '';
+    document.getElementById('efOccupation').value = f.occupation || '';
+    document.getElementById('efReligion').value = f.religion || '';
+    document.getElementById('efDoctor').value = f.doctorName || '';
+    document.getElementById('efCause').value = f.causeOfDeath || '';
+    document.getElementById('efPlaceDeath').value = f.placeOfDeath || '';
+    document.getElementById('efPlaceBurial').value = f.placeOfBurial || '';
+    document.getElementById('efCemetery').value = f.cemetery || '';
+    document.getElementById('efGraveNo').value = f.graveNumber || '';
+    document.getElementById('efInstructions').value = f.specialInstructions || '';
+    
+    // Checkboxes
+    document.getElementById('efHearse').checked = f.hearseRequired;
+    document.getElementById('efCar').checked = f.mournersCarRequired;
+
+    // Dates (Convert to YYYY-MM-DD for input type="date")
+    if (f.funeralDate) {
+        document.getElementById('efDateBurial').value = f.funeralDate.split('T')[0];
+    }
+    document.getElementById('efTimeBurial').value = f.timeOfBurial || '';
+
+    // Show Modal
+    document.getElementById('editFuneralModal').style.display = 'flex';
+}
+
+function closeEditModal() {
+    document.getElementById('editFuneralModal').style.display = 'none';
+}
+
+// Handle Form Submit
+document.getElementById('editFuneralForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('editFunId').value;
+    
+    const payload = {
+        branchCode: document.getElementById('efBranch').value,
+        countryOfBirth: document.getElementById('efCountry').value,
+        occupation: document.getElementById('efOccupation').value,
+        religion: document.getElementById('efReligion').value,
+        doctorName: document.getElementById('efDoctor').value,
+        causeOfDeath: document.getElementById('efCause').value,
+        placeOfDeath: document.getElementById('efPlaceDeath').value,
+        placeOfBurial: document.getElementById('efPlaceBurial').value,
+        cemetery: document.getElementById('efCemetery').value,
+        graveNo: document.getElementById('efGraveNo').value,
+        instructions: document.getElementById('efInstructions').value,
+        hearseRequired: document.getElementById('efHearse').checked,
+        mournersCarRequired: document.getElementById('efCar').checked,
+        
+        dateOfBurial: document.getElementById('efDateBurial').value,
+        timeOfBurial: document.getElementById('efTimeBurial').value
+    };
+
+    const res = await fetch(`${API_BASE}/funeral/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+        alert('Funeral Details Updated!');
+        closeEditModal();
+        loadFuneralHistory(); // Refresh table to show changes
+    } else {
+        alert('Error updating details.');
+    }
+});
+
+// NEW: Print the Green Form
+function printGreenForm(funeralId) {
+    const f = currentFuneralHistory.find(x => x.id === funeralId);
+    if (!f) return;
+
+    // Toggle Print View
+    document.getElementById('receipt-print-area').classList.remove('print-active');
+    document.getElementById('funeral-print-area').classList.remove('print-active');
+    document.getElementById('green-form-print-area').classList.add('print-active');
+
+    // Fill Header
+    document.getElementById('gfDate').innerText = new Date().toLocaleDateString();
+    document.getElementById('gfId').innerText = f.id;
+
+    // Fill Bio Data
+    if(f.deceasedMember) {
+        document.getElementById('gfSurname').innerText = f.deceasedMember.lastName;
+        document.getElementById('gfFirstNames').innerText = f.deceasedMember.firstName;
+        document.getElementById('gfIdNo').innerText = f.deceasedMember.idNumber;
+        document.getElementById('gfAddress').innerText = f.deceasedMember.address || '';
+        document.getElementById('gfSex').innerText = "N/A"; // Assuming sex isn't in Member yet
+    }
+
+    // Fill Funeral Details
+    document.getElementById('gfBranch').innerText = f.branchCode || '';
+    document.getElementById('gfOcc').innerText = f.occupation || '';
+    document.getElementById('gfDOD').innerText = f.dateOfDeath || '';
+    document.getElementById('gfPOD').innerText = f.placeOfDeath || '';
+    document.getElementById('gfCause').innerText = f.causeOfDeath || '';
+    document.getElementById('gfDoc').innerText = f.doctorName || '';
+    document.getElementById('gfKin').innerText = f.nextOfKin || '';
+    
+    document.getElementById('gfBurialDate').innerText = new Date(f.funeralDate).toLocaleDateString();
+    document.getElementById('gfTime').innerText = f.timeOfBurial || '';
+    document.getElementById('gfReligion').innerText = f.religion || '';
+    document.getElementById('gfMinister').innerText = f.minister || '';
+    document.getElementById('gfCemetery').innerText = f.cemetery || '';
+    document.getElementById('gfGrave').innerText = f.graveNumber || '';
+    document.getElementById('gfGraveType').innerText = f.graveType || '';
+    document.getElementById('gfHearse').innerText = f.hearseRequired ? 'Yes' : 'No';
+    document.getElementById('gfCar').innerText = f.mournersCarRequired ? 'Yes' : 'No';
+    document.getElementById('gfNotes').innerText = f.specialInstructions || '';
+
+    // Fill Expenses Table
+    const tbody = document.getElementById('gfExpenseBody');
+    tbody.innerHTML = '';
+    if(f.expenses) {
+        f.expenses.forEach(e => {
+            tbody.innerHTML += `<tr>
+                <td style="border-right:1px solid black; padding:2px;">${e.itemName}</td>
+                <td style="text-align:right; padding:2px;">${e.cost.toFixed(2)}</td>
+            </tr>`;
+        });
+    }
+
+    // Fill Totals
+    document.getElementById('gfTotal').innerText = f.totalCost.toFixed(2);
+    document.getElementById('gfPaid').innerText = f.paidBySociety.toFixed(2);
+    document.getElementById('gfFamily').innerText = f.paidByFamily.toFixed(2);
+
+    setTimeout(() => { 
+        window.print(); 
+        document.getElementById('green-form-print-area').classList.remove('print-active');
+    }, 200);
+}
+
+// Print Funeral Statement
+// 2. Funeral Receipt (New)
+function printFuneralReceipt(funeralId) {
+    const f = currentFuneralHistory.find(x => x.id === funeralId);
+    if (!f) return;
+
+    // Set Active Template
+    document.getElementById('receipt-print-area').classList.remove('print-active');
+    document.getElementById('funeral-print-area').classList.add('print-active');
+
+    // Fill Basic Info
+    const dateObj = new Date(f.funeralDate);
+    document.getElementById('funDate').innerText = dateObj.toLocaleDateString();
+    document.getElementById('funRef').innerText = "F-" + f.id;
+    document.getElementById('funDeceased').innerText = `${f.deceasedMember.firstName} ${f.deceasedMember.lastName}`;
+    document.getElementById('funSociety').innerText = f.society.name;
+    document.getElementById('funGrave').innerText = f.graveNumber || "-";
+
+    // Fill Financials
+    document.getElementById('funTotal').innerText = `R ${f.totalCost.toFixed(2)}`;
+    document.getElementById('funSocPaid').innerText = `R ${f.paidBySociety.toFixed(2)}`;
+    document.getElementById('funFamilyPay').innerText = `R ${f.paidByFamily.toFixed(2)}`;
+
+    // Fill Audit (Balances)
+    const balBefore = f.societyBalanceBefore !== null ? `R ${f.societyBalanceBefore.toFixed(2)}` : "N/A";
+    const balAfter = f.societyBalanceAfter !== null ? `R ${f.societyBalanceAfter.toFixed(2)}` : "N/A";
+    document.getElementById('funBalBefore').innerText = balBefore;
+    document.getElementById('funBalAfter').innerText = balAfter;
+
+    // Fill Expenses List
+    const list = document.getElementById('funExpenseList');
+    list.innerHTML = '';
+    if(f.expenses && f.expenses.length > 0) {
+        f.expenses.forEach(e => {
+            const li = document.createElement('li');
+            li.innerHTML = `• ${e.itemName}: <strong>R ${e.cost.toFixed(2)}</strong>`;
+            list.appendChild(li);
+        });
+    } else {
+        list.innerHTML = '<li>No itemized expenses.</li>';
+    }
+
+    // Print
+    setTimeout(() => { 
+        window.print(); 
+        document.getElementById('funeral-print-area').classList.remove('print-active');
+    }, 200);
+}
+
+// NEW: Print the Green Form
+function printGreenForm(funeralId) {
+    const f = currentFuneralHistory.find(x => x.id === funeralId);
+    if (!f) return;
+
+    // Toggle Print View
+    document.getElementById('receipt-print-area').classList.remove('print-active');
+    document.getElementById('funeral-print-area').classList.remove('print-active');
+    document.getElementById('green-form-print-area').classList.add('print-active');
+
+    // Fill Header
+    document.getElementById('gfDate').innerText = new Date().toLocaleDateString();
+    document.getElementById('gfId').innerText = f.id;
+
+    // Fill Bio Data
+    if(f.deceasedMember) {
+        document.getElementById('gfSurname').innerText = f.deceasedMember.lastName;
+        document.getElementById('gfFirstNames').innerText = f.deceasedMember.firstName;
+        document.getElementById('gfIdNo').innerText = f.deceasedMember.idNumber;
+        document.getElementById('gfAddress').innerText = f.deceasedMember.address || '';
+        document.getElementById('gfSex').innerText = "N/A"; // Assuming sex isn't in Member yet
+    }
+
+    // Fill Funeral Details
+    document.getElementById('gfBranch').innerText = f.branchCode || '';
+    document.getElementById('gfOcc').innerText = f.occupation || '';
+    document.getElementById('gfDOD').innerText = f.dateOfDeath || '';
+    document.getElementById('gfPOD').innerText = f.placeOfDeath || '';
+    document.getElementById('gfCause').innerText = f.causeOfDeath || '';
+    document.getElementById('gfDoc').innerText = f.doctorName || '';
+    document.getElementById('gfKin').innerText = f.nextOfKin || '';
+    
+    document.getElementById('gfBurialDate').innerText = new Date(f.funeralDate).toLocaleDateString();
+    document.getElementById('gfTime').innerText = f.timeOfBurial || '';
+    document.getElementById('gfReligion').innerText = f.religion || '';
+    document.getElementById('gfMinister').innerText = f.minister || '';
+    document.getElementById('gfCemetery').innerText = f.cemetery || '';
+    document.getElementById('gfGrave').innerText = f.graveNumber || '';
+    document.getElementById('gfGraveType').innerText = f.graveType || '';
+    document.getElementById('gfHearse').innerText = f.hearseRequired ? 'Yes' : 'No';
+    document.getElementById('gfCar').innerText = f.mournersCarRequired ? 'Yes' : 'No';
+    document.getElementById('gfNotes').innerText = f.specialInstructions || '';
+
+    // Fill Expenses Table
+    const tbody = document.getElementById('gfExpenseBody');
+    tbody.innerHTML = '';
+    if(f.expenses) {
+        f.expenses.forEach(e => {
+            tbody.innerHTML += `<tr>
+                <td style="border-right:1px solid black; padding:2px;">${e.itemName}</td>
+                <td style="text-align:right; padding:2px;">${e.cost.toFixed(2)}</td>
+            </tr>`;
+        });
+    }
+
+    // Fill Totals
+    document.getElementById('gfTotal').innerText = f.totalCost.toFixed(2);
+    document.getElementById('gfPaid').innerText = f.paidBySociety.toFixed(2);
+    document.getElementById('gfFamily').innerText = f.paidByFamily.toFixed(2);
+
+    setTimeout(() => { 
+        window.print(); 
+        document.getElementById('green-form-print-area').classList.remove('print-active');
+    }, 200);
 }
 
 // --- HELPER: Number to Words ---

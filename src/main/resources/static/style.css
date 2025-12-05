@@ -9,7 +9,7 @@
 
 /* Base Setup */
 * {
-    box-sizing: border-box; /* Crucial for responsiveness */
+    box-sizing: border-box;
 }
 
 body {
@@ -26,7 +26,7 @@ header {
     color: white;
     padding: 1rem;
     display: flex;
-    flex-wrap: wrap; /* Allows wrapping on mobile */
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     gap: 15px;
@@ -53,8 +53,9 @@ nav button {
     border-radius: 4px;
     transition: all 0.2s;
     font-size: 0.9rem;
-    flex: 1 1 auto; /* Grow to fill space on mobile */
+    flex: 1 1 auto;
     text-align: center;
+    margin: 2px;
 }
 
 nav button:hover, nav button:active {
@@ -86,11 +87,11 @@ label {
 }
 
 input, select, textarea {
-    width: 100%; /* Full width by default */
+    width: 100%;
     padding: 12px;
     border: 1px solid var(--border-color);
     border-radius: 4px;
-    font-size: 16px; /* 16px prevents zoom on iPhone */
+    font-size: 16px;
 }
 
 /* Buttons */
@@ -130,11 +131,10 @@ button:hover { opacity: 0.9; }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Row for side-by-side inputs */
 .row {
     display: flex;
     gap: 15px;
-    align-items: flex-end; /* Align bottom */
+    align-items: flex-end;
 }
 
 .input-group {
@@ -144,7 +144,7 @@ button:hover { opacity: 0.9; }
 /* --- DASHBOARD CARDS --- */
 .card-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Responsive Grid */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
 }
 
@@ -161,19 +161,19 @@ button:hover { opacity: 0.9; }
 .card h3 { margin-top: 0; }
 .money { font-size: 2rem; font-weight: bold; color: var(--secondary); margin: 10px 0; }
 
-/* --- TABLES (Responsive) --- */
+/* --- TABLES --- */
 .table-wrapper {
     margin-top: 1.5rem;
     border: 1px solid var(--border-color);
     border-radius: 6px;
-    overflow-x: auto; /* Enable horizontal scroll on mobile */
+    overflow-x: auto;
     background: white;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 700px; /* Forces scrollbar on small screens */
+    min-width: 700px;
 }
 
 th, td {
@@ -187,7 +187,7 @@ th { background-color: var(--primary); color: white; }
 tr:nth-child(even) { background-color: #fcfcfc; }
 tr:hover { background-color: #f1f1f1; }
 
-/* --- FUNERAL RECORD LAYOUT --- */
+/* --- FUNERAL LAYOUT --- */
 .funeral-layout {
     display: flex;
     gap: 30px;
@@ -245,99 +245,60 @@ tr:hover { background-color: #f1f1f1; }
 /* =========================================
    📱 MOBILE MEDIA QUERIES
    ========================================= */
-
-/* Tablet & Smaller (max-width: 900px) */
 @media (max-width: 900px) {
-    .funeral-layout {
-        flex-direction: column; /* Stack Funeral form on top of expenses */
-    }
-
-    .expense-column {
-        margin-top: 20px;
-    }
+    .funeral-layout { flex-direction: column; }
+    .expense-column { margin-top: 20px; }
 }
 
-/* Mobile Phones (max-width: 600px) */
 @media (max-width: 600px) {
-    header {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    nav {
-        justify-content: center;
-        width: 100%;
-    }
-
-    nav button {
-        flex: 1 1 45%; /* Buttons take up half width each */
-        margin-bottom: 5px;
-    }
-
-    main {
-        width: 100%;
-        margin: 0;
-        border-radius: 0;
-        padding: 1rem;
-    }
-
-    .row {
-        flex-direction: column; /* Stack input groups (Grave/Cemetery) */
-        gap: 10px;
-    }
-
-    .row button {
-        width: 100%; /* Add button becomes full width */
-    }
-
-    .header-row {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-
-    .filters {
-        overflow-x: auto;
-        white-space: nowrap;
-        padding-bottom: 10px;
-        width: 100%;
-    }
+    header { flex-direction: column; text-align: center; }
+    nav { justify-content: center; width: 100%; }
+    nav button { flex: 1 1 45%; margin-bottom: 5px; }
+    main { width: 100%; margin: 0; border-radius: 0; padding: 1rem; }
+    .row { flex-direction: column; gap: 10px; }
+    .row button { width: 100%; }
+    .header-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .filters { overflow-x: auto; white-space: nowrap; padding-bottom: 10px; width: 100%; }
 }
 
 /* =========================================
-   🖨️ RECEIPT PRINTING STYLES
+   🖨️ RECEIPT PRINTING STYLES (FIXED)
    ========================================= */
 
-/* 1. Hide Receipt on Screen by default */
-#receipt-print-area {
+/* 1. Hide ALL print containers on screen by default */
+#receipt-print-area,
+#funeral-print-area {
     display: none;
 }
 
-/* 2. When Printing, Hide App and Show Receipt */
 @media print {
-    /* Hide the Dashboard/Website */
+    /* 2. Hide the Main Application Logic */
     #screen-content {
         display: none !important;
     }
 
-    /* Show Receipt Area */
-    #receipt-print-area {
+    /* 3. Show ONLY the container that has the 'print-active' class */
+    /* Using ID selectors to be specific */
+    #receipt-print-area.print-active,
+    #funeral-print-area.print-active {
         display: block !important;
         position: absolute;
-        top: 0; left: 0;
+        top: 0;
+        left: 0;
         width: 100%;
         height: 100%;
         background: white;
+        z-index: 9999;
     }
 
-    /* 3. Style to match the Boikanyo Image */
+    /* 4. Common Receipt Styling (Applied to both templates) */
     .receipt-box {
         width: 100%;
         max-width: 600px;
-        margin: 20px auto;
-        border: 2px solid #333; /* The thick border */
+        margin: 0 auto;
+        border: 2px solid #333;
         padding: 20px;
-        font-family: 'Courier New', Courier, monospace; /* Typewriter font */
+        font-family: 'Courier New', Courier, monospace;
         color: black;
     }
 
@@ -345,27 +306,94 @@ tr:hover { background-color: #f1f1f1; }
         text-align: center;
         border-bottom: 2px solid #333;
         margin-bottom: 10px;
+        padding-bottom: 10px;
     }
+
+    .receipt-header h2 { margin: 5px 0; font-size: 1.5rem; text-transform: uppercase; }
+    .receipt-header h3 { margin: 5px 0; font-size: 1.1rem; font-weight: normal; }
 
     .receipt-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
+        gap: 0;
         border: 1px solid #333;
     }
 
     .grid-box {
         border: 1px solid #333;
-        padding: 8px;
-        font-size: 14px;
+        padding: 5px 8px;
+        font-size: 13px;
     }
 
     .full-width { grid-column: span 2; }
 
-    .balance-box {
-        border: 2px solid #333;
-        padding: 5px 15px;
-        font-weight: bold;
-        display: inline-block;
-        margin-left: 10px;
+    .words-box { font-style: italic; text-transform: capitalize; padding: 15px 8px; }
+    
+    .receipt-footer { margin-top: 20px; }
+    
+    .balance-row { 
+        display: flex; 
+        align-items: center; 
+        justify-content: flex-end; /* Align balance to right */
+        gap: 10px; 
+        font-size: 1.1rem; 
+        margin-bottom: 15px; 
     }
+
+    .balance-box { border: 2px solid #333; padding: 5px 15px; font-weight: bold; }
+
+    .company-details { font-size: 12px; line-height: 1.4; color: #555; text-align: center; }
+    .company-details p { margin: 2px 0; }
+}
+
+/* Green Form Specific Styles */
+#green-form-print-area.print-active {
+    display: block !important;
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: white; z-index: 10000;
+}
+
+.green-form-box {
+    width: 100%; max-width: 800px; /* Wider like an A4 page */
+    margin: 0 auto;
+    border: 3px solid black;
+    padding: 15px;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    color: black;
+}
+
+.green-header {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 2px solid black; padding-bottom: 10px; margin-bottom: 10px;
+}
+
+.green-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 Columns */
+    border: 1px solid black;
+}
+
+.g-cell {
+    border: 1px solid black;
+    padding: 4px;
+    overflow: hidden;
+}
+
+.g-cell.full { grid-column: span 4; }
+.g-cell strong { display: block; font-size: 10px; color: #333; }
+.g-cell span { font-weight: bold; font-size: 13px; }
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); z-index: 2000;
+    display: flex; justify-content: center; align-items: center;
+}
+.modal-content {
+    background: white; padding: 20px; border-radius: 8px;
+    width: 90%; max-width: 600px;
+    max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }

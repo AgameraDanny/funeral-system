@@ -97,4 +97,12 @@ public class AdminController {
         // Returns all funerals, automatically including the list of expenses due to JPA
         return funeralRepository.findAll();
     }
+
+    // --- UPDATE FUNERAL (For editing logistics/bio data) ---
+    @PutMapping("/funeral/{id}")
+    public ResponseEntity<?> updateFuneral(@PathVariable Long id, @RequestBody FuneralRequest request) {
+        // We will delegate to a new service method
+        Funeral f = financeService.updateFuneralDetails(id, request);
+        return ResponseEntity.ok(f);
+    }
 }

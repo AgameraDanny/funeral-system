@@ -159,67 +159,104 @@
             </section>
 
             <!-- FUNERALS SECTION -->
+            <!-- FUNERALS SECTION -->
             <section id="funerals" class="hidden-section">
                 <h2>Record Funeral Event</h2>
-                
-                <!-- CHANGED: Replaced inline styles with CSS classes -->
                 <div class="funeral-layout">
-                    
-                    <!-- Left Side: Basic Info -->
                     <div class="form-column">
                         <form id="funeralForm">
+                            <div class="info-box" id="budgetDisplay">Society Balance: R 0.00</div>
                             <label>Select Deceased Member:</label>
                             <select id="funeralMemberSelect" onchange="updateSocietyBalanceDisplay()" required></select>
 
-                            <div class="info-box" id="budgetDisplay">
-                                Society Balance: R 0.00
-                            </div>
-
-                            <label>Amount Covered by Society:</label>
-                            <input type="number" id="societyPays" placeholder="0.00" required>
-
-                            <div class="row">
-                                <div class="input-group">
-                                    <label>Grave Number:</label>
-                                    <input type="text" id="graveNo">
+                            <!-- Fieldset: Personal Info -->
+                            <fieldset style="border:1px solid #ccc; padding:10px; border-radius:5px; margin-bottom:10px;">
+                                <legend>Deceased Details</legend>
+                                <div class="row">
+                                    <input type="text" id="fBranch" placeholder="Branch Code" value="1000">
+                                    <input type="text" id="fCountry" placeholder="Country" value="R.S.A">
                                 </div>
-                                <div class="input-group">
-                                    <label>Cemetery:</label>
-                                    <input type="text" id="cemetery">
+                                <div class="row">
+                                    <input type="text" id="fOccupation" placeholder="Occupation">
+                                    <select id="fMarital">
+                                        <option value="Single">Single</option>
+                                        <option value="Married">Married</option>
+                                        <option value="Widowed">Widowed</option>
+                                    </select>
                                 </div>
-                            </div>
+                                <div class="row">
+                                    <div class="input-group">
+                                        <label style="font-size:12px">Date of Death</label>
+                                        <input type="date" id="fDateDeath">
+                                    </div>
+                                    <div class="input-group">
+                                        <label style="font-size:12px">Place of Death</label>
+                                        <input type="text" id="fPlaceDeath">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <input type="text" id="fCause" placeholder="Cause of Death">
+                                    <input type="text" id="fDoctor" placeholder="Doctor Name">
+                                </div>
+                                <input type="text" id="fNextKin" placeholder="Next of Kin Full Name">
+                            </fieldset>
 
-                            <label>Special Instructions:</label>
-                            <textarea id="instructions" rows="3"></textarea>
+                            <!-- Fieldset: Funeral Logistics -->
+                            <fieldset style="border:1px solid #ccc; padding:10px; border-radius:5px;">
+                                <legend>Funeral Arrangement</legend>
+                                <div class="row">
+                                    <div class="input-group">
+                                        <label style="font-size:12px">Date of Burial</label>
+                                        <input type="date" id="fDateBurial">
+                                    </div>
+                                    <div class="input-group">
+                                        <label style="font-size:12px">Time</label>
+                                        <input type="time" id="fTimeBurial">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <input type="text" id="fReligion" placeholder="Religion">
+                                    <input type="text" id="fMinister" placeholder="Minister">
+                                </div>
+                                <div class="row">
+                                    <input type="text" id="fVenue" placeholder="Funeral Venue (Home/Church)">
+                                    <input type="text" id="fPlaceBurial" placeholder="Place of Burial">
+                                </div>
+                                <div class="row">
+                                    <input type="text" id="fCemetery" placeholder="Cemetery">
+                                    <input type="text" id="fGraveNo" placeholder="Grave No">
+                                    <input type="text" id="fGraveType" placeholder="Grave Type (Ord)">
+                                </div>
+                                <div class="row">
+                                    <label><input type="checkbox" id="fHearse"> Hearse?</label>
+                                    <label><input type="checkbox" id="fCar"> Mourners Car?</label>
+                                </div>
+                            </fieldset>
+
+                            <label style="margin-top:10px;">Special Instructions / Funeral Needs:</label>
+                            <textarea id="fInstructions" rows="3" placeholder="Bus, Tents, Directions, etc."></textarea>
                         </form>
                     </div>
 
-                    <!-- Right Side: Expenses List -->
+                    <!-- Right Side: Financials -->
                     <div class="expense-column">
-                        <h3>📝 Expense Items</h3>
+                        <h3>💰 Financials</h3>
+                        <label>Society Cover Amount (R):</label>
+                        <input type="number" id="societyPays" placeholder="0.00">
                         
+                        <h4 style="margin-top:15px;">📝 Expenses / Invoice Items</h4>
                         <div class="row">
-                            <input type="text" id="newItemName" placeholder="Item (e.g. Coffin)" style="flex: 2;">
+                            <input type="text" id="newItemName" placeholder="Item (Coffin, Bus, etc.)" style="flex: 2;">
                             <input type="number" id="newItemCost" placeholder="Cost" style="flex: 1;">
                             <button type="button" onclick="addExpenseItem()">Add</button>
                         </div>
-
                         <div class="table-wrapper" style="margin-top: 10px;">
                             <table class="expense-table">
-                                <thead>
-                                    <tr>
-                                        <th>Item</th>
-                                        <th>Cost</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
+                                <thead><tr><th>Item</th><th>Cost</th><th>Action</th></tr></thead>
                                 <tbody id="expenseListBody"></tbody>
                             </table>
                         </div>
-
-                        <div class="total-row">
-                            Total Cost: <span id="displayTotalCost">R 0.00</span>
-                        </div>
+                        <div class="total-row">Total: <span id="displayTotalCost">R 0.00</span></div>
                         
                         <button type="button" onclick="submitFuneral()" class="danger-btn" style="width:100%; margin-top:20px;">
                             Process Funeral
@@ -312,6 +349,58 @@
                 </div>
             </section>
 
+            <!-- EDIT FUNERAL MODAL (Hidden) -->
+            <div id="editFuneralModal" class="modal-overlay" style="display:none;">
+                <div class="modal-content">
+                    <h3>Edit Funeral Details</h3>
+                    <form id="editFuneralForm">
+                        <input type="hidden" id="editFunId">
+                        
+                        <div class="row">
+                            <input type="text" id="efBranch" placeholder="Branch">
+                            <input type="text" id="efCountry" placeholder="Country">
+                        </div>
+                        <div class="row">
+                            <input type="text" id="efOccupation" placeholder="Occupation">
+                            <input type="text" id="efReligion" placeholder="Religion">
+                        </div>
+                        <div class="row">
+                            <input type="text" id="efDoctor" placeholder="Doctor">
+                            <input type="text" id="efCause" placeholder="Cause of Death">
+                        </div>
+                        <div class="row">
+                            <input type="text" id="efPlaceDeath" placeholder="Place of Death">
+                            <input type="text" id="efPlaceBurial" placeholder="Place of Burial">
+                        </div>
+                        <div class="row">
+                            <input type="text" id="efCemetery" placeholder="Cemetery">
+                            <input type="text" id="efGraveNo" placeholder="Grave No">
+                        </div>
+                        <div class="row">
+                            <div class="input-group">
+                                <label>Burial Date</label>
+                                <input type="date" id="efDateBurial">
+                            </div>
+                            <div class="input-group">
+                                <label>Time</label>
+                                <input type="time" id="efTimeBurial">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label><input type="checkbox" id="efHearse"> Hearse</label>
+                            <label><input type="checkbox" id="efCar"> Car</label>
+                        </div>
+                        
+                        <textarea id="efInstructions" rows="3" placeholder="Notes..."></textarea>
+
+                        <div style="margin-top:15px; text-align:right;">
+                            <button type="button" class="danger-btn" onclick="closeEditModal()">Cancel</button>
+                            <button type="submit">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         </main>
 
     </div>
@@ -373,6 +462,162 @@
                     <p>Company Reg: CK1997/031585/23</p>
                     <p>FSB: 3886 VAT: 4830120558</p>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!--  FUNERAL STATEMENT TEMPLATE (New)              -->
+    <!-- ============================================== -->
+    <div id="funeral-print-area" class="print-area">
+        <div class="receipt-box">
+            <div class="receipt-header">
+                <h2>Boikanyo's Funeral Home</h2>
+                <h3>Funeral Statement & Invoice</h3>
+            </div>
+            
+            <div class="receipt-grid">
+                <!-- Basic Info -->
+                <div class="grid-box"><strong>Date:</strong> <span id="funDate">---</span></div>
+                <div class="grid-box"><strong>Ref No:</strong> <span id="funRef">---</span></div>
+                
+                <div class="grid-box full-width"><strong>Deceased:</strong> <span id="funDeceased">---</span></div>
+                <div class="grid-box"><strong>Society:</strong> <span id="funSociety">---</span></div>
+                <div class="grid-box"><strong>Grave No:</strong> <span id="funGrave">---</span></div>
+
+                <!-- Financial Summary Table -->
+                <div class="grid-box full-width" style="padding:0; border:none;">
+                    <table style="width:100%; border-collapse:collapse; margin-top:10px;">
+                        <tr style="background:#eee;">
+                            <th style="text-align:left; padding:5px; border:1px solid #333;">Description</th>
+                            <th style="text-align:right; padding:5px; border:1px solid #333;">Amount</th>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px; border:1px solid #333;">Total Funeral Cost</td>
+                            <td style="text-align:right; padding:5px; border:1px solid #333; font-weight:bold;" id="funTotal">R 0.00</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px; border:1px solid #333;">Less: Paid by Society</td>
+                            <td style="text-align:right; padding:5px; border:1px solid #333;" id="funSocPaid">R 0.00</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px; border:1px solid #333; font-weight:bold;">FAMILY TO PAY</td>
+                            <td style="text-align:right; padding:5px; border:1px solid #333; font-weight:bold; font-size:1.1em;" id="funFamilyPay">R 0.00</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Expenses List -->
+                <div class="grid-box full-width" style="margin-top:10px; border-top: 2px solid #333;">
+                    <strong>Expense Breakdown:</strong>
+                    <ul id="funExpenseList" style="list-style:none; padding-left:0; margin:5px 0; font-size:0.9em;">
+                        <!-- Items injected here -->
+                    </ul>
+                </div>
+
+                <!-- Society Audit -->
+                <div class="grid-box full-width" style="margin-top:10px; border:1px dashed #333; padding:5px;">
+                    <div style="font-weight:bold; text-decoration:underline;">Society Budget Audit:</div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span>Balance Before: <span id="funBalBefore">---</span></span>
+                        <span>Balance After: <span id="funBalAfter">---</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="receipt-footer">
+                <div class="company-details">
+                    <p>Tel: 0122510000 Fax: 0122510990</p>
+                    <p>1409 Zone 15 Industrial Site Lethabile</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!--  GREEN FORM TEMPLATE (Replicates Image)        -->
+    <!-- ============================================== -->
+    <div id="green-form-print-area" class="print-area">
+        <div class="green-form-box">
+            <div class="green-header">
+                <h2>BOIKANYO'S FUNERAL HOME</h2>
+                <div style="text-align:right;">
+                    <span>Date: <span id="gfDate"></span></span> <br>
+                    <span>No: <span id="gfId"></span></span>
+                </div>
+            </div>
+
+            <!-- Block 1: Bio Data -->
+            <div class="green-grid">
+                <div class="g-cell"><strong>Surname:</strong> <span id="gfSurname"></span></div>
+                <div class="g-cell"><strong>First Names:</strong> <span id="gfFirstNames"></span></div>
+                <div class="g-cell"><strong>ID No:</strong> <span id="gfIdNo"></span></div>
+                <div class="g-cell"><strong>Sex:</strong> <span id="gfSex"></span></div>
+                
+                <div class="g-cell"><strong>Branch:</strong> <span id="gfBranch"></span></div>
+                <div class="g-cell"><strong>DOB:</strong> <span id="gfDob"></span></div>
+                <div class="g-cell"><strong>Occupation:</strong> <span id="gfOcc"></span></div>
+                <div class="g-cell"><strong>Address:</strong> <span id="gfAddress"></span></div>
+                
+                <div class="g-cell"><strong>Date of Death:</strong> <span id="gfDOD"></span></div>
+                <div class="g-cell"><strong>Place of Death:</strong> <span id="gfPOD"></span></div>
+                <div class="g-cell"><strong>Cause:</strong> <span id="gfCause"></span></div>
+                <div class="g-cell"><strong>Doctor:</strong> <span id="gfDoc"></span></div>
+                
+                <div class="g-cell full"><strong>Next of Kin:</strong> <span id="gfKin"></span></div>
+            </div>
+
+            <!-- Block 2: Funeral Logistics -->
+            <div class="green-grid" style="margin-top:10px;">
+                <div class="g-cell"><strong>Burial Date:</strong> <span id="gfBurialDate"></span></div>
+                <div class="g-cell"><strong>Time:</strong> <span id="gfTime"></span></div>
+                <div class="g-cell"><strong>Religion:</strong> <span id="gfReligion"></span></div>
+                <div class="g-cell"><strong>Minister:</strong> <span id="gfMinister"></span></div>
+                <div class="g-cell"><strong>To Cemetery:</strong> <span id="gfCemetery"></span></div>
+                <div class="g-cell"><strong>Grave No:</strong> <span id="gfGrave"></span></div>
+                <div class="g-cell"><strong>Type:</strong> <span id="gfGraveType"></span></div>
+                <div class="g-cell"><strong>Hearse:</strong> <span id="gfHearse"></span></div>
+                <div class="g-cell"><strong>Mourners Car:</strong> <span id="gfCar"></span></div>
+            </div>
+
+            <!-- Block 3: Expenses Table (Mimics right side of image) -->
+            <div style="margin-top:15px; border:2px solid black;">
+                <table style="width:100%; border-collapse:collapse;">
+                    <thead>
+                        <tr style="border-bottom:1px solid black; background:#eee;">
+                            <th style="text-align:left; padding:5px; border-right:1px solid black;">Description (Coffin/Fees/Needs)</th>
+                            <th style="text-align:right; padding:5px; width:100px;">Amount (R)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gfExpenseBody">
+                        <!-- Items injected here -->
+                    </tbody>
+                    <tfoot>
+                        <tr style="border-top:2px solid black; font-weight:bold;">
+                            <td style="padding:5px; text-align:right; border-right:1px solid black;">TOTAL COSTS:</td>
+                            <td style="padding:5px; text-align:right;" id="gfTotal">0.00</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px; text-align:right; border-right:1px solid black;">Less: Society/Pre-paid:</td>
+                            <td style="padding:5px; text-align:right;" id="gfPaid">0.00</td>
+                        </tr>
+                        <tr style="border-top:1px solid black; font-weight:bold; font-size:1.1em;">
+                            <td style="padding:5px; text-align:right; border-right:1px solid black;">FAMILY TO PAY:</td>
+                            <td style="padding:5px; text-align:right;" id="gfFamily">0.00</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- Bottom Notes -->
+            <div style="margin-top:10px; border:1px solid black; padding:5px; height:80px;">
+                <strong>Funeral Needs / Instructions:</strong> <br>
+                <span id="gfNotes"></span>
+            </div>
+
+            <div class="receipt-footer" style="margin-top:20px; text-align:right;">
+                <p><strong>Tiisang Burial Society</strong></p>
+                <p>P.O Box 84, Legonyane</p>
             </div>
         </div>
     </div>

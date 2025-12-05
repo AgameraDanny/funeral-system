@@ -57,53 +57,67 @@ public class FinanceService {
 
         Society society = member.getSociety();
 
-        // 1. Calculate Total Cost from Items
         BigDecimal totalCost = BigDecimal.ZERO;
         for (FuneralRequest.ExpenseItem item : request.getItems()) {
             totalCost = totalCost.add(item.getCost());
         }
 
-        // --- CHANGE START ---
-        
-        // Capture Balance BEFORE
         BigDecimal balanceBefore = society.getCurrentBalance();
 
-        // 2. Check Budget
         if (balanceBefore.compareTo(request.getSocietyPays()) < 0) {
             throw new RuntimeException("Insufficient Society Funds. Balance: " + balanceBefore);
         }
 
-        // 3. Deduct from Society
         BigDecimal balanceAfter = balanceBefore.subtract(request.getSocietyPays());
         society.setCurrentBalance(balanceAfter);
         societyRepository.save(society);
 
-        // --- CHANGE END ---
-
-        // 4. Update Member
         member.setDeceased(true);
-        member.setDateOfDeath(LocalDate.now());
+        member.setDateOfDeath(request.getDateOfDeath() != null ? request.getDateOfDeath() : LocalDate.now());
         memberRepository.save(member);
 
-        // 5. Create Funeral
         Funeral funeral = new Funeral();
         funeral.setDeceasedMember(member);
         funeral.setSociety(society);
         funeral.setTotalCost(totalCost);
         funeral.setPaidBySociety(request.getSocietyPays());
         funeral.setPaidByFamily(totalCost.subtract(request.getSocietyPays()));
-        funeral.setGraveNumber(request.getGraveNo());
-        funeral.setCemetery(request.getCemetery());
-        funeral.setSpecialInstructions(request.getInstructions());
-        funeral.setFuneralDate(LocalDateTime.now().plusDays(3));
         
-        // SAVE HISTORY
+        // --- MAP NEW FIELDS ---
+        funeral.setBranchCode(request.getBranchCode());
+        funeral.setCountryOfBirth(request.getCountryOfBirth());
+        funeral.setOccupation(request.getOccupation());
+        funeral.setMaritalStatus(request.getMaritalStatus());
+        funeral.setReligion(request.getReligion());
+        funeral.setMinister(request.getMinister());
+        funeral.setDoctorName(request.getDoctorName());
+        funeral.setNextOfKin(request.getNextOfKin());
+        funeral.setFuneralVenue(request.getFuneralVenue());
+        funeral.setPlaceOfDeath(request.getPlaceOfDeath());
+        funeral.setPlaceOfBurial(request.getPlaceOfBurial());
+        funeral.setCauseOfDeath(request.getCauseOfDeath());
+        funeral.setDateOfDeath(request.getDateOfDeath());
+        
+        // Handle Funeral Date/Time
+        if(request.getDateOfBurial() != null) {
+            funeral.setFuneralDate(request.getDateOfBurial().atStartOfDay());
+        } else {
+            funeral.setFuneralDate(LocalDateTime.now().plusDays(3));
+        }
+        funeral.setTimeOfBurial(request.getTimeOfBurial());
+
+        funeral.setGraveNumber(request.getGraveNo());
+        funeral.setGraveType(request.getGraveType());
+        funeral.setCemetery(request.getCemetery());
+        funeral.setHearseRequired(request.isHearseRequired());
+        funeral.setMournersCarRequired(request.isMournersCarRequired());
+        funeral.setSpecialInstructions(request.getInstructions());
+        
         funeral.setSocietyBalanceBefore(balanceBefore);
         funeral.setSocietyBalanceAfter(balanceAfter);
 
         Funeral savedFuneral = funeralRepository.save(funeral);
 
-        // 6. Save Expenses
         for (FuneralRequest.ExpenseItem item : request.getItems()) {
             FuneralExpense expense = new FuneralExpense();
             expense.setItemName(item.getName());
@@ -113,5 +127,38 @@ public class FinanceService {
         }
 
         return savedFuneral;
+    }
+
+    @Transactional
+    public Funeral updateFuneralDetails(Long id, FuneralRequest request) {
+        Funeral funeral = funeralRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Funeral not found"));
+
+        // Update Bio & Logistics only
+        funeral.setBranchCode(request.getBranchCode());
+        funeral.setCountryOfBirth(request.getCountryOfBirth());
+        funeral.setOccupation(request.getOccupation());
+        funeral.setMaritalStatus(request.getMaritalStatus());
+        funeral.setReligion(request.getReligion());
+        funeral.setMinister(request.getMinister());
+        funeral.setDoctorName(request.getDoctorName());
+        funeral.setNextOfKin(request.getNextOfKin());
+        funeral.setFuneralVenue(request.getFuneralVenue());
+        funeral.setPlaceOfDeath(request.getPlaceOfDeath());
+        funeral.setPlaceOfBurial(request.getPlaceOfBurial());
+        funeral.setCauseOfDeath(request.getCauseOfDeath());
+        
+        if (request.getDateOfDeath() != null) funeral.setDateOfDeath(request.getDateOfDeath());
+        if (request.getDateOfBurial() != null) funeral.setFuneralDate(request.getDateOfBurial().atStartOfDay());
+        
+        funeral.setTimeOfBurial(request.getTimeOfBurial());
+        funeral.setGraveNumber(request.getGraveNo());
+        funeral.setGraveType(request.getGraveType());
+        funeral.setCemetery(request.getCemetery());
+        funeral.setHearseRequired(request.isHearseRequired());
+        funeral.setMournersCarRequired(request.isMournersCarRequired());
+        funeral.setSpecialInstructions(request.getInstructions());
+
+        return funeralRepository.save(funeral);
     }
 }
