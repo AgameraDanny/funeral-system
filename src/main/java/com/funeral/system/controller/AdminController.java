@@ -66,11 +66,14 @@ public class AdminController {
 
     // --- FINANCE: CONTRIBUTIONS ---
 
+
     @PostMapping("/contribution")
     public ResponseEntity<?> payContribution(@RequestParam Long memberId, 
                                              @RequestParam BigDecimal amount, 
-                                             @RequestParam String notes) {
-        Contribution c = financeService.recordContribution(memberId, amount, notes);
+                                             @RequestParam String notes,
+                                             @RequestParam String paymentMethod) { // ADD THIS
+        
+        Contribution c = financeService.recordContribution(memberId, amount, notes, paymentMethod);
         return ResponseEntity.ok(c);
     }
 

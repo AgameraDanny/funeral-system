@@ -1,12 +1,13 @@
 const API_BASE = '/api/admin';
 
-// Store current data globally for sorting
+// Store current data globally
 let currentContributions = [];
 let currentSocietyId = null;
 let currentSocietyData = null;
+let currentFuneralHistory = []; // NEW: Stores history for the "View Items" button
 
-let memberBalanceMap = {}; // Stores { memberId: balance }
-let expenseItems = [];     // Stores current list of items
+let memberBalanceMap = {};
+let expenseItems = [];
 
 // --- Navigation ---
 function showSection(sectionId) {
@@ -58,10 +59,9 @@ async function loadSocieties() {
 // --- VIEW SOCIETY DETAILS ---
 async function viewSocietyDetails(society) {
     currentSocietyId = society.id;
-    currentSocietyData = society; // Save for Edit Form
+    currentSocietyData = society;
     document.getElementById('detailTitle').innerText = society.name;
     
-    // Hide Edit form initially
     document.getElementById('editSocietyContainer').style.display = 'none';
 
     // 1. Populate Members Table
@@ -104,7 +104,6 @@ async function loadSocietyContributions(societyId) {
 function toggleEditSociety() {
     const container = document.getElementById('editSocietyContainer');
     if (container.style.display === 'none') {
-        // Show form and populate values
         document.getElementById('editSocietyId').value = currentSocietyData.id;
         document.getElementById('editSocietyName').value = currentSocietyData.name;
         document.getElementById('editSocietyAccNo').value = currentSocietyData.accountNumber || '';
@@ -130,7 +129,7 @@ document.getElementById('updateSocietyForm').addEventListener('submit', async (e
 
     if (res.ok) {
         alert('Society Updated Successfully!');
-        showSection('dashboard'); // Reload to see changes
+        showSection('dashboard');
     } else {
         alert('Error updating society');
     }
@@ -164,9 +163,7 @@ function renderContributionsTable() {
 
 // --- PRINT LOGIC ---
 
-// 1. Called from the Table Button (History)
 function printHistoricalReceipt(contributionId) {
-    // Find the contribution object from the memory list
     const contrib = currentContributions.find(c => c.id === contributionId);
     
     if (contrib) {
@@ -176,31 +173,61 @@ function printHistoricalReceipt(contributionId) {
     }
 }
 
-// 2. Called from the New Payment Form
 document.getElementById('contributionForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const memberId = document.getElementById('contribMemberSelect').value;
     const amount = parseFloat(document.getElementById('contribAmount').value);
     const notes = document.getElementById('contribNotes').value;
+    
+    // 1. GET PAYMENT METHOD
+    const method = document.getElementById('contribMethod').value;
 
-    const res = await fetch(`${API_BASE}/contribution?memberId=${memberId}&amount=${amount}&notes=${notes}`, { method: 'POST' });
+    // 2. SEND TO BACKEND
+    const res = await fetch(`${API_BASE}/contribution?memberId=${memberId}&amount=${amount}&notes=${notes}&paymentMethod=${method}`, { method: 'POST' });
     
     if (res.ok) {
         const contribution = await res.json();
-        generateReceipt(contribution); // Use the helper
+        generateReceipt(contribution);
         document.getElementById('contributionForm').reset();
     } else {
         alert('Error recording payment');
     }
 });
 
-// 3. The Master Function that fills the HTML and triggers print
-function generateReceipt(contribution) {
-    document.getElementById('recNo').innerText = contribution.id;
+// function generateReceipt(contribution) {
+//     document.getElementById('recNo').innerText = contribution.id;
+//     document.getElementById('recAccNo').innerText = contribution.society.accountNumber || "N/A";
+
+//     // 3. SHOW PAYMENT METHOD ON RECEIPT
+//     const method = contribution.paymentMethod || "Cash";
+//     document.getElementById('recMethod').innerText = method; // Top box
+//     document.getElementById('recType').innerText = method;   // Bottom box
+
+//     const dateObj = new Date(contribution.paymentDate);
+//     document.getElementById('recDate').innerText = dateObj.toLocaleDateString();
     
-    // Account Number
+//     document.getElementById('recSociety').innerText = contribution.society.name;
+//     document.getElementById('recMember').innerText = `${contribution.member.firstName} ${contribution.member.lastName}`;
+//     document.getElementById('recAmount').innerText = `R ${contribution.amount.toFixed(2)}`;
+//     document.getElementById('recBalance').innerText = `R ${contribution.society.currentBalance.toFixed(2)}`;
+//     document.getElementById('recWords').innerText = numberToWords(contribution.amount) + " Rands Only";
+
+//     setTimeout(() => { window.print(); }, 200);
+// }
+function generateReceipt(contribution) {
+    // 1. Account & Receipt No
+    document.getElementById('recNo').innerText = contribution.id;
     document.getElementById('recAccNo').innerText = contribution.society.accountNumber || "N/A";
 
+    // 2. Payment Method (This was causing the crash if ID was missing)
+    const method = contribution.paymentMethod || "Cash";
+    const recMethodSpan = document.getElementById('recMethod');
+    if (recMethodSpan) recMethodSpan.innerText = method;
+    
+    const recTypeSpan = document.getElementById('recType');
+    if (recTypeSpan) recTypeSpan.innerText = method;
+
+    // 3. Details
     const dateObj = new Date(contribution.paymentDate);
     document.getElementById('recDate').innerText = dateObj.toLocaleDateString();
     
@@ -210,9 +237,70 @@ function generateReceipt(contribution) {
     document.getElementById('recBalance').innerText = `R ${contribution.society.currentBalance.toFixed(2)}`;
     document.getElementById('recWords').innerText = numberToWords(contribution.amount) + " Rands Only";
 
+    // 4. Print
     setTimeout(() => { window.print(); }, 200);
 }
 
+
+// --- FUNERAL HISTORY (FIXED) ---
+async function loadFuneralHistory() {
+    const tbody = document.getElementById('funeralHistoryBody');
+    tbody.innerHTML = '<tr><td colspan="10">Loading...</td></tr>';
+    try {
+        const res = await fetch(`${API_BASE}/funerals`);
+        const funerals = await res.json();
+        
+        // 4. SAVE TO GLOBAL VARIABLE (Fixes the button issue)
+        currentFuneralHistory = funerals;
+
+        tbody.innerHTML = '';
+        if (funerals.length === 0) { tbody.innerHTML = '<tr><td colspan="10">No history.</td></tr>'; return; }
+        
+        funerals.sort((a, b) => new Date(b.funeralDate) - new Date(a.funeralDate));
+        
+        funerals.forEach(f => {
+            const dateStr = new Date(f.funeralDate).toLocaleDateString();
+            const memberName = f.deceasedMember ? `${f.deceasedMember.firstName} ${f.deceasedMember.lastName}` : 'Unknown';
+            const balBefore = f.societyBalanceBefore !== null ? `R ${f.societyBalanceBefore.toFixed(2)}` : '-';
+            const balAfter = f.societyBalanceAfter !== null ? `R ${f.societyBalanceAfter.toFixed(2)}` : '-';
+            
+            // 5. CALL FUNCTION instead of inline alert (Fixes SyntaxError)
+            tbody.innerHTML += `<tr>
+                <td>${dateStr}</td>
+                <td>${memberName}</td>
+                <td>${f.society.name}</td>
+                <td>${f.graveNumber || '-'}</td>
+                <td style="font-weight:bold">R ${f.totalCost.toFixed(2)}</td>
+                <td style="color:green">R ${f.paidBySociety.toFixed(2)}</td>
+                <td style="color:#7f8c8d"><small>${balBefore}</small></td>
+                <td style="color:#2c3e50; font-weight:bold">${balAfter}</td>
+                <td style="color:red">R ${f.paidByFamily.toFixed(2)}</td>
+                <td><button class="action-btn" style="padding:2px 8px; font-size:12px;" onclick="viewFuneralDetails(${f.id})">Items</button></td>
+            </tr>`;
+        });
+    } catch (e) { console.error(e); }
+}
+
+// 6. NEW FUNCTION TO SHOW DETAILS SAFELY
+function viewFuneralDetails(funeralId) {
+    const funeral = currentFuneralHistory.find(f => f.id === funeralId);
+    if (!funeral) return;
+
+    let details = "Expenses:\n";
+    if (funeral.expenses && funeral.expenses.length > 0) {
+        funeral.expenses.forEach(e => {
+            details += `- ${e.itemName}: R ${e.cost.toFixed(2)}\n`;
+        });
+    } else {
+        details += "No expenses recorded.\n";
+    }
+
+    if (funeral.specialInstructions) {
+        details += `\nInstructions:\n${funeral.specialInstructions}`;
+    }
+
+    alert(details);
+}
 
 // --- Sorting Logic ---
 function sortContributions(criteria) {
@@ -233,7 +321,7 @@ document.getElementById('societyForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const payload = {
         name: document.getElementById('societyName').value,
-        accountNumber: document.getElementById('societyAccNo').value, // NEW
+        accountNumber: document.getElementById('societyAccNo').value,
         currentBalance: document.getElementById('societyBalance').value
     };
     const res = await fetch(`${API_BASE}/society`, {
@@ -321,66 +409,6 @@ async function loadMemberDropdown(elementId) {
     });
 }
 
-// --- Funeral History Logic ---
-async function loadFuneralHistory() {
-    const tbody = document.getElementById('funeralHistoryBody');
-    tbody.innerHTML = '<tr><td colspan="7">Loading records...</td></tr>';
-
-    try {
-        const res = await fetch(`${API_BASE}/funerals`);
-        const funerals = await res.json();
-
-        tbody.innerHTML = '';
-
-        if (funerals.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7">No funerals recorded yet.</td></tr>';
-            return;
-        }
-
-        // Sort by newest first
-        funerals.sort((a, b) => new Date(b.funeralDate) - new Date(a.funeralDate));
-
-        funerals.forEach(f => {
-            const dateStr = new Date(f.funeralDate).toLocaleDateString();
-            const memberName = f.deceasedMember 
-                ? `${f.deceasedMember.firstName} ${f.deceasedMember.lastName}` 
-                : 'Unknown';
-            const societyName = f.society ? f.society.name : '-';
-
-            // Handle potential nulls for old records
-            const balBefore = f.societyBalanceBefore !== null ? `R ${f.societyBalanceBefore.toFixed(2)}` : '-';
-            const balAfter = f.societyBalanceAfter !== null ? `R ${f.societyBalanceAfter.toFixed(2)}` : '-';
-
-            const expenseDetails = f.expenses 
-                ? f.expenses.map(e => `${e.itemName}: R ${e.cost}`).join('\n') 
-                : 'No details';
-
-            const row = `
-                <tr>
-                    <td>${dateStr}</td>
-                    <td>${memberName}</td>
-                    <td>${societyName}</td>
-                    <td>${f.graveNumber || '-'}</td>
-                    <td style="font-weight:bold">R ${f.totalCost.toFixed(2)}</td>
-                    <td style="color:green">R ${f.paidBySociety.toFixed(2)}</td>
-                    <td style="color:#7f8c8d"><small>${balBefore}</small></td>
-                    <td style="color:#2c3e50; font-weight:bold">${balAfter}</td>
-                    <td style="color:red">R ${f.paidByFamily.toFixed(2)}</td>
-                    <td>
-                        <button onclick="alert('Expenses:\\n${expenseDetails}\\n\\nInstructions:\\n${f.specialInstructions || 'None'}')">
-                            View Items
-                        </button>
-                    </td>
-                </tr>
-            `;
-            tbody.innerHTML += row;
-        });
-    } catch (e) {
-        console.error(e);
-        tbody.innerHTML = '<tr><td colspan="7">Error loading history.</td></tr>';
-    }
-}
-
 // --- Funeral: Update Balance Display ---
 function updateSocietyBalanceDisplay() {
     const memId = document.getElementById('funeralMemberSelect').value;
@@ -389,7 +417,7 @@ function updateSocietyBalanceDisplay() {
     if(memId && memberBalanceMap[memId] !== undefined) {
         display.innerText = `Society Balance: R ${memberBalanceMap[memId]}`;
     } else {
-        display.innerText = 'Society Balance: R 0.00'; // FIXED: was $0.00
+        display.innerText = 'Society Balance: R 0.00'; 
     }
 }
 
@@ -470,7 +498,7 @@ async function submitFuneral() {
         expenseItems = [];
         renderExpenseTable();
         document.getElementById('funeralForm').reset();
-        document.getElementById('budgetDisplay').innerText = 'Society Balance: R 0.00'; // FIXED: was $0.00
+        document.getElementById('budgetDisplay').innerText = 'Society Balance: R 0.00';
         showSection('dashboard');
     } else {
         const txt = await res.text();

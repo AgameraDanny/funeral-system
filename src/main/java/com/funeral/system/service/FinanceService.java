@@ -23,7 +23,7 @@ public class FinanceService {
 
     // 1. Record a Monthly Contribution
     @Transactional
-    public Contribution recordContribution(Long memberId, BigDecimal amount, String notes) {
+    public Contribution recordContribution(Long memberId, BigDecimal amount, String notes, String paymentMethod) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RuntimeException("Member not found"));
 
@@ -44,6 +44,7 @@ public class FinanceService {
         contribution.setAmount(amount);
         contribution.setPaymentDate(LocalDateTime.now());
         contribution.setNotes(notes);
+        contribution.setPaymentMethod(paymentMethod);
 
         return contributionRepository.save(contribution);
     }

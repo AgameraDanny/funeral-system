@@ -24,4 +24,6 @@ public class Contribution {
     private LocalDateTime paymentDate;
     
     private String notes; // e.g., "January 2025 Contribution"
+
+    private String paymentMethod; 
 }

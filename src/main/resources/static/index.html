@@ -143,6 +143,13 @@
                     
                     <label>Amount:</label>
                     <input type="number" id="contribAmount" value="100.00" required>
+
+                    <label>Payment Method:</label>
+                    <select id="contribMethod">
+                        <option value="Cash">Cash</option>
+                        <option value="EFT">EFT / Bank Transfer</option>
+                        <option value="Card">Card</option>
+                    </select>
                     
                     <label>Notes (Month/Year):</label>
                     <input type="text" id="contribNotes" placeholder="e.g. Jan 2025">
@@ -310,7 +317,7 @@
     </div>
 
     <!-- ============================================== -->
-    <!--  RECEIPT TEMPLATE (Hidden on screen, Visible on Print) -->
+    <!--  RECEIPT TEMPLATE (This must match JS IDs)     -->
     <!-- ============================================== -->
     <div id="receipt-print-area">
         <div class="receipt-box">
@@ -326,9 +333,12 @@
                 <div class="grid-box">
                     <strong>Receipt No:</strong> <span id="recNo">---</span>
                 </div>
+                
+                <!-- FIX: Added ID 'recMethod' -->
                 <div class="grid-box">
-                    <strong>Payment:</strong> Cash
+                    <strong>Payment:</strong> <span id="recMethod">Cash</span>
                 </div>
+                
                 <div class="grid-box full-width">
                     <strong>Date:</strong> <span id="recDate">---</span>
                 </div>
@@ -341,9 +351,12 @@
                 <div class="grid-box">
                     <strong>Amt:</strong> <span id="recAmount">R 0.00</span>
                 </div>
+                
+                <!-- FIX: Added ID 'recType' -->
                 <div class="grid-box">
-                    <strong>Type:</strong> Cash
+                    <strong>Type:</strong> <span id="recType">Cash</span>
                 </div>
+                
                 <div class="grid-box full-width words-box">
                     <span id="recWords">Zero Rands Only</span>
                 </div>
