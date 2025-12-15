@@ -11,6 +11,7 @@ import java.util.List;
 @Entity
 @Data
 public class Funeral {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,20 +44,20 @@ public class Funeral {
     private String placeOfDeath;
     private String placeOfBurial;
     private String causeOfDeath;
-    
+
     // Dates & Times
     private LocalDateTime funeralDate; // Acts as Date of Burial
     private String timeOfBurial;
     private LocalDate dateOfDeath;
-    
+
     // Logistics
     private String graveNumber;
     private String graveType; // Ord, etc.
     private String cemetery;
-    
+
     private boolean hearseRequired;
     private boolean mournersCarRequired;
-    
+
     @Column(columnDefinition = "TEXT")
     private String specialInstructions; // Used for "Funeral Needs" text or extra notes
 
