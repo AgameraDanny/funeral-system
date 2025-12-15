@@ -155,13 +155,18 @@ function renderContributionsTable() {
                     <td>R ${c.amount.toFixed(2)}</td>
                     <td>${c.notes || '-'}</td>
                     <td><button class="action-btn" style="padding:5px 10px; font-size:12px;" onclick="printHistoricalReceipt(${c.id})">🖨️ Print</button></td>
+                    <button class="danger-btn" onclick="deleteContribution(${c.id})">Delete</button>
                 </tr>`;
         });
     }
     document.getElementById('totalContributions').innerText = `R ${total.toFixed(2)}`;
 }
 
-// --- PRINT LOGIC ---
+async function deleteContribution(id) {
+    if(!confirm("Are you sure? This will deduct the money from the Society Balance.")) return;
+    await fetch(`${API_BASE}/contribution/${id}`, { method: 'DELETE' });
+    loadSocietyContributions(currentSocietyId); // Refresh
+}
 
 function printHistoricalReceipt(contributionId) {
     const contrib = currentContributions.find(c => c.id === contributionId);
@@ -840,6 +845,26 @@ function numberToWords(amount) {
     if (num > 0) { words += units[num] + " "; }
     
     return words.trim();
+}
+
+// Function called when a member is selected in Funeral Form
+async function updateFuneralFormDetails() {
+    const memId = document.getElementById('funeralMemberSelect').value;
+    if(!memId) return;
+
+    // 1. Get Member Details (You need a GET /member/{id} endpoint or find in existing list)
+    // For now, let's assume we find it in our cached list 'allMembers'
+    const member = allMembers.find(m => m.id == memId);
+    
+    if(member && member.policyPlan) {
+        // 2. Fetch Cover Amount
+        const res = await fetch(`${API_BASE}/policy-cover?plan=${member.policyPlan}`);
+        const coverAmount = await res.json();
+        
+        // 3. Auto-fill the "Society Pays" box
+        document.getElementById('societyPays').value = coverAmount;
+        alert(`Member is on ${member.policyPlan}. Cover amount R${coverAmount} auto-filled.`);
+    }
 }
 
 // Init

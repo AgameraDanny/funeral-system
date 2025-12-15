@@ -119,6 +119,17 @@
                     <label>Society:</label>
                     <select id="memSocietySelect" required></select>
 
+                    <label>Policy Plan:</label>
+                    <select id="memPolicy">
+                        <option value="None">None</option>
+                        <option value="Plan A">Plan A (R10k Cover)</option>
+                        <option value="Plan B">Plan B (R20k Cover)</option>
+                        <option value="Plan C">Plan C (R30k Cover)</option>
+                        <option value="Bronze">Bronze Scheme</option>
+                        <option value="Silver">Silver Scheme</option>
+                        <option value="Gold">Gold Scheme</option>
+                    </select>
+
                     <label>Member Type:</label>
                     <select id="memType" onchange="togglePrimaryMemberSelect()">
                         <option value="PRIMARY">Primary Member</option>
@@ -420,311 +431,108 @@
     </div>
 
     <!-- ============================================== -->
-    <!--  RECEIPT TEMPLATE (This must match JS IDs)     -->
+    <!--  1. SAVINGS RECEIPT TEMPLATE                   -->
     <!-- ============================================== -->
-    <div id="receipt-print-area">
+    <div id="receipt-print-area" class="print-area">
         <div class="receipt-box">
             <div class="receipt-header">
                 <h2>Boikanyo's Funeral Home</h2>
                 <h3>Society Savings Receipt</h3>
             </div>
-            
             <div class="receipt-grid">
-                <div class="grid-box">
-                    <strong>Acc No:</strong> <span id="recAccNo" style="font-weight:bold">---</span>
-                </div>
-                <div class="grid-box">
-                    <strong>Receipt No:</strong> <span id="recNo">---</span>
-                </div>
-                
-                <!-- FIX: Added ID 'recMethod' -->
-                <div class="grid-box">
-                    <strong>Payment:</strong> <span id="recMethod">Cash</span>
-                </div>
-                
-                <div class="grid-box full-width">
-                    <strong>Date:</strong> <span id="recDate">---</span>
-                </div>
-                <div class="grid-box full-width">
-                    <strong>Society:</strong> <span id="recSociety">---</span>
-                </div>
-                <div class="grid-box full-width">
-                    <strong>Member:</strong> <span id="recMember">---</span>
-                </div>
-                <div class="grid-box">
-                    <strong>Amt:</strong> <span id="recAmount">R 0.00</span>
-                </div>
-                
-                <!-- FIX: Added ID 'recType' -->
-                <div class="grid-box">
-                    <strong>Type:</strong> <span id="recType">Cash</span>
-                </div>
-                
-                <div class="grid-box full-width words-box">
-                    <span id="recWords">Zero Rands Only</span>
-                </div>
+                <div class="grid-box"><strong>Acc No:</strong> <span id="recAccNo">---</span></div>
+                <div class="grid-box"><strong>Receipt No:</strong> <span id="recNo">---</span></div>
+                <div class="grid-box"><strong>Payment:</strong> <span id="recMethod">Cash</span></div>
+                <div class="grid-box full-width"><strong>Date:</strong> <span id="recDate">---</span></div>
+                <div class="grid-box full-width"><strong>Society:</strong> <span id="recSociety">---</span></div>
+                <div class="grid-box full-width"><strong>Member:</strong> <span id="recMember">---</span></div>
+                <div class="grid-box"><strong>Amt:</strong> <span id="recAmount">R 0.00</span></div>
+                <div class="grid-box"><strong>Type:</strong> <span id="recType">Cash</span></div>
+                <div class="grid-box full-width words-box"><span id="recWords">Zero Rands Only</span></div>
             </div>
-
             <div class="receipt-footer">
-                <div class="balance-row">
-                    <strong>Acc Balance:</strong>
-                    <div class="balance-box" id="recBalance">R 0.00</div>
-                </div>
+                <div class="balance-row"><strong>Acc Balance:</strong> <div class="balance-box" id="recBalance">R 0.00</div></div>
                 <div class="company-details">
-                    <p>Tel: 0122510000 Fax: 0122510990</p>
-                    <p>1409 Zone 15 Industrial Site Lethabile</p>
-                    <p>Company Reg: CK1997/031585/23</p>
-                    <p>FSB: 3886 VAT: 4830120558</p>
+                    <p>Tel: 0122510000 | 1409 Zone 15 Industrial Site Lethabile</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- ============================================== -->
-    <!--  FUNERAL STATEMENT TEMPLATE (New)              -->
+    <!--  2. FUNERAL INVOICE TEMPLATE                   -->
     <!-- ============================================== -->
     <div id="funeral-print-area" class="print-area">
         <div class="receipt-box">
             <div class="receipt-header">
                 <h2>Boikanyo's Funeral Home</h2>
-                <h3>Funeral Statement & Invoice</h3>
+                <h3>Funeral Statement</h3>
             </div>
-            
             <div class="receipt-grid">
-                <!-- Basic Info -->
                 <div class="grid-box"><strong>Date:</strong> <span id="funDate">---</span></div>
                 <div class="grid-box"><strong>Ref No:</strong> <span id="funRef">---</span></div>
-                
                 <div class="grid-box full-width"><strong>Deceased:</strong> <span id="funDeceased">---</span></div>
                 <div class="grid-box"><strong>Society:</strong> <span id="funSociety">---</span></div>
                 <div class="grid-box"><strong>Grave No:</strong> <span id="funGrave">---</span></div>
-
-                <!-- Financial Summary Table -->
-                <div class="grid-box full-width" style="padding:0; border:none;">
-                    <table style="width:100%; border-collapse:collapse; margin-top:10px;">
-                        <tr style="background:#eee;">
-                            <th style="text-align:left; padding:5px; border:1px solid #333;">Description</th>
-                            <th style="text-align:right; padding:5px; border:1px solid #333;">Amount</th>
-                        </tr>
-                        <tr>
-                            <td style="padding:5px; border:1px solid #333;">Total Funeral Cost</td>
-                            <td style="text-align:right; padding:5px; border:1px solid #333; font-weight:bold;" id="funTotal">R 0.00</td>
-                        </tr>
-                        <tr>
-                            <td style="padding:5px; border:1px solid #333;">Less: Paid by Society</td>
-                            <td style="text-align:right; padding:5px; border:1px solid #333;" id="funSocPaid">R 0.00</td>
-                        </tr>
-                        <tr>
-                            <td style="padding:5px; border:1px solid #333; font-weight:bold;">FAMILY TO PAY</td>
-                            <td style="text-align:right; padding:5px; border:1px solid #333; font-weight:bold; font-size:1.1em;" id="funFamilyPay">R 0.00</td>
-                        </tr>
+                
+                <div class="grid-box full-width" style="border:none; padding:0;">
+                    <table style="width:100%; margin-top:10px; border-collapse:collapse;">
+                        <tr><td style="border:1px solid #000; padding:5px;">Total Cost</td><td style="border:1px solid #000; padding:5px; text-align:right;" id="funTotal">R 0.00</td></tr>
+                        <tr><td style="border:1px solid #000; padding:5px;">Less: Society Paid</td><td style="border:1px solid #000; padding:5px; text-align:right;" id="funSocPaid">R 0.00</td></tr>
+                        <tr><td style="border:1px solid #000; padding:5px; font-weight:bold;">FAMILY TO PAY</td><td style="border:1px solid #000; padding:5px; text-align:right; font-weight:bold;" id="funFamilyPay">R 0.00</td></tr>
                     </table>
-                </div>
-
-                <!-- Expenses List -->
-                <div class="grid-box full-width" style="margin-top:10px; border-top: 2px solid #333;">
-                    <strong>Expense Breakdown:</strong>
-                    <ul id="funExpenseList" style="list-style:none; padding-left:0; margin:5px 0; font-size:0.9em;">
-                        <!-- Items injected here -->
-                    </ul>
-                </div>
-
-                <!-- Society Audit -->
-                <div class="grid-box full-width" style="margin-top:10px; border:1px dashed #333; padding:5px;">
-                    <div style="font-weight:bold; text-decoration:underline;">Society Budget Audit:</div>
-                    <div style="display:flex; justify-content:space-between;">
-                        <span>Balance Before: <span id="funBalBefore">---</span></span>
-                        <span>Balance After: <span id="funBalAfter">---</span></span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="receipt-footer">
-                <div class="company-details">
-                    <p>Tel: 0122510000 Fax: 0122510990</p>
-                    <p>1409 Zone 15 Industrial Site Lethabile</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- ============================================== -->
-    <!--  GREEN FORM TEMPLATE (Replicates Image)        -->
+    <!--  3. GREEN FORM LOGISTICS TEMPLATE              -->
     <!-- ============================================== -->
     <div id="green-form-print-area" class="print-area">
         <div class="green-form-box">
             <div class="green-header">
                 <h2>BOIKANYO'S FUNERAL HOME</h2>
                 <div style="text-align:right;">
-                    <span>Date: <span id="gfDate"></span></span> <br>
+                    <span>Date: <span id="gfDate"></span></span><br>
                     <span>No: <span id="gfId"></span></span>
                 </div>
             </div>
 
-            <!-- Block 1: Bio Data -->
-            <div class="green-grid">
-                <div class="g-cell"><strong>Surname:</strong> <span id="gfSurname"></span></div>
-                <div class="g-cell"><strong>First Names:</strong> <span id="gfFirstNames"></span></div>
-                <div class="g-cell"><strong>ID No:</strong> <span id="gfIdNo"></span></div>
-                <div class="g-cell"><strong>Sex:</strong> <span id="gfSex"></span></div>
-                
-                <div class="g-cell"><strong>Branch:</strong> <span id="gfBranch"></span></div>
-                <div class="g-cell"><strong>DOB:</strong> <span id="gfDob"></span></div>
-                <div class="g-cell"><strong>Occupation:</strong> <span id="gfOcc"></span></div>
-                <div class="g-cell"><strong>Address:</strong> <span id="gfAddress"></span></div>
-                
-                <div class="g-cell"><strong>Date of Death:</strong> <span id="gfDOD"></span></div>
-                <div class="g-cell"><strong>Place of Death:</strong> <span id="gfPOD"></span></div>
-                <div class="g-cell"><strong>Cause:</strong> <span id="gfCause"></span></div>
-                <div class="g-cell"><strong>Doctor:</strong> <span id="gfDoc"></span></div>
-                
-                <div class="g-cell full"><strong>Next of Kin:</strong> <span id="gfKin"></span></div>
+            <!-- BIO GRID -->
+            <div class="green-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; border:1px solid black; padding:5px;">
+                <div><strong>Surname:</strong> <span id="gfSurname"></span></div>
+                <div><strong>Names:</strong> <span id="gfFirstNames"></span></div>
+                <div><strong>ID:</strong> <span id="gfIdNo"></span></div>
+                <div><strong>Sex:</strong> <span id="gfSex"></span></div>
+                <div><strong>Branch:</strong> <span id="gfBranch"></span></div>
+                <div><strong>Address:</strong> <span id="gfAddress"></span></div>
+                <div><strong>DOD:</strong> <span id="gfDOD"></span></div>
+                <div><strong>Cause:</strong> <span id="gfCause"></span></div>
             </div>
 
-            <!-- Block 2: Funeral Logistics -->
-            <div class="green-grid" style="margin-top:10px;">
-                <div class="g-cell"><strong>Burial Date:</strong> <span id="gfBurialDate"></span></div>
-                <div class="g-cell"><strong>Time:</strong> <span id="gfTime"></span></div>
-                <div class="g-cell"><strong>Religion:</strong> <span id="gfReligion"></span></div>
-                <div class="g-cell"><strong>Minister:</strong> <span id="gfMinister"></span></div>
-                <div class="g-cell"><strong>To Cemetery:</strong> <span id="gfCemetery"></span></div>
-                <div class="g-cell"><strong>Grave No:</strong> <span id="gfGrave"></span></div>
-                <div class="g-cell"><strong>Type:</strong> <span id="gfGraveType"></span></div>
-                <div class="g-cell"><strong>Hearse:</strong> <span id="gfHearse"></span></div>
-                <div class="g-cell"><strong>Mourners Car:</strong> <span id="gfCar"></span></div>
+            <!-- LOGISTICS GRID -->
+            <div class="green-grid" style="margin-top:10px; border:1px solid black; padding:5px;">
+                <div><strong>Burial Date:</strong> <span id="gfBurialDate"></span> <strong>Time:</strong> <span id="gfTime"></span></div>
+                <div><strong>Cemetery:</strong> <span id="gfCemetery"></span> <strong>Grave:</strong> <span id="gfGrave"></span></div>
+                <div><strong>Hearse:</strong> <span id="gfHearse"></span> <strong>Car:</strong> <span id="gfCar"></span></div>
             </div>
 
-            <!-- Block 3: Expenses Table (Mimics right side of image) -->
-            <div style="margin-top:15px; border:2px solid black;">
+            <!-- FINANCIALS -->
+            <div style="margin-top:10px; border:2px solid black;">
                 <table style="width:100%; border-collapse:collapse;">
-                    <thead>
-                        <tr style="border-bottom:1px solid black; background:#eee;">
-                            <th style="text-align:left; padding:5px; border-right:1px solid black;">Description (Coffin/Fees/Needs)</th>
-                            <th style="text-align:right; padding:5px; width:100px;">Amount (R)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="gfExpenseBody">
-                        <!-- Items injected here -->
-                    </tbody>
-                    <tfoot>
-                        <tr style="border-top:2px solid black; font-weight:bold;">
-                            <td style="padding:5px; text-align:right; border-right:1px solid black;">TOTAL COSTS:</td>
-                            <td style="padding:5px; text-align:right;" id="gfTotal">0.00</td>
-                        </tr>
-                        <tr>
-                            <td style="padding:5px; text-align:right; border-right:1px solid black;">Less: Society/Pre-paid:</td>
-                            <td style="padding:5px; text-align:right;" id="gfPaid">0.00</td>
-                        </tr>
-                        <tr style="border-top:1px solid black; font-weight:bold; font-size:1.1em;">
-                            <td style="padding:5px; text-align:right; border-right:1px solid black;">FAMILY TO PAY:</td>
-                            <td style="padding:5px; text-align:right;" id="gfFamily">0.00</td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-
-            <!-- Bottom Notes -->
-            <div style="margin-top:10px; border:1px solid black; padding:5px; height:80px;">
-                <strong>Funeral Needs / Instructions:</strong> <br>
-                <span id="gfNotes"></span>
-            </div>
-
-            <div class="receipt-footer" style="margin-top:20px; text-align:right;">
-                <p><strong>Tiisang Burial Society</strong></p>
-                <p>P.O Box 84, Legonyane</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- GREEN FORM TEMPLATE -->
-    <div id="green-form-print-area" class="print-area">
-        <div class="green-form-box" style="border:2px solid black; padding:20px; font-family: sans-serif;">
-            <div class="green-header" style="display:flex; justify-content:space-between; border-bottom:2px solid black; padding-bottom:10px; margin-bottom:15px;">
-                <div>
-                    <h2 style="margin:0;">BOIKANYO'S FUNERAL HOME</h2>
-                    <small>Essential Cover & Burial Services</small>
-                </div>
-                <div style="text-align:right;">
-                    <div>Date: <span id="gfDate"></span></div>
-                    <div>Ref No: <span id="gfId" style="color:red; font-weight:bold;"></span></div>
-                </div>
-            </div>
-
-            <!-- GRID LAYOUT -->
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9em;">
-                
-                <!-- LEFT COLUMN: BIO -->
-                <div style="border:1px solid #333; padding:5px;">
-                    <div class="g-row"><strong>Surname:</strong> <span id="gfSurname"></span></div>
-                    <div class="g-row"><strong>First Names:</strong> <span id="gfFirstNames"></span></div>
-                    <div class="g-row"><strong>ID No:</strong> <span id="gfIdNo"></span></div>
-                    <div class="g-row"><strong>Sex:</strong> <span id="gfSex"></span> <strong>Marital:</strong> <span id="gfMarital"></span></div>
-                    <div class="g-row"><strong>DOB:</strong> <span id="gfDob"></span> <strong>Branch:</strong> <span id="gfBranch"></span></div>
-                    <div class="g-row"><strong>Occupation:</strong> <span id="gfOcc"></span></div>
-                    <div class="g-row"><strong>Address:</strong> <span id="gfAddress"></span></div>
-                </div>
-
-                <!-- RIGHT COLUMN: DEATH INFO -->
-                <div style="border:1px solid #333; padding:5px;">
-                    <div class="g-row"><strong>Date of Death:</strong> <span id="gfDOD"></span></div>
-                    <div class="g-row"><strong>Place of Death:</strong> <span id="gfPOD"></span></div>
-                    <div class="g-row"><strong>Cause:</strong> <span id="gfCause"></span></div>
-                    <div class="g-row"><strong>Doctor:</strong> <span id="gfDoc"></span></div>
-                    <div class="g-row"><strong>Next of Kin:</strong> <span id="gfKin"></span></div>
-                </div>
-            </div>
-
-            <!-- LOGISTICS ROW -->
-            <div style="margin-top:10px; border:1px solid #333; padding:5px; font-size: 0.9em;">
-                <div style="display:flex; flex-wrap:wrap; gap:15px;">
-                    <span><strong>Burial Date:</strong> <span id="gfBurialDate"></span></span>
-                    <span><strong>Time:</strong> <span id="gfTime"></span></span>
-                    <span><strong>Religion:</strong> <span id="gfReligion"></span></span>
-                    <span><strong>Minister:</strong> <span id="gfMinister"></span></span>
-                </div>
-                <div style="display:flex; flex-wrap:wrap; gap:15px; margin-top:5px;">
-                    <span><strong>Cemetery:</strong> <span id="gfCemetery"></span></span>
-                    <span><strong>Grave No:</strong> <span id="gfGrave"></span></span>
-                    <span><strong>Type:</strong> <span id="gfGraveType"></span></span>
-                    <span><strong>Hearse:</strong> <span id="gfHearse"></span></span>
-                    <span><strong>Car:</strong> <span id="gfCar"></span></span>
-                </div>
-            </div>
-
-            <!-- EXPENSES TABLE -->
-            <div style="margin-top:15px;">
-                <table style="width:100%; border-collapse:collapse; border:1px solid black;">
-                    <thead style="background:#eee;">
-                        <tr>
-                            <th style="border:1px solid black; text-align:left; padding:5px;">Description of Needs / Expenses</th>
-                            <th style="border:1px solid black; text-align:right; padding:5px; width:100px;">Amount</th>
-                        </tr>
-                    </thead>
+                    <thead><tr style="background:#eee;"><th style="text-align:left;">Item</th><th style="text-align:right;">Cost</th></tr></thead>
                     <tbody id="gfExpenseBody"></tbody>
                     <tfoot>
-                        <tr>
-                            <td style="border:1px solid black; text-align:right; font-weight:bold; padding:5px;">TOTAL COST:</td>
-                            <td style="border:1px solid black; text-align:right; font-weight:bold; padding:5px;" id="gfTotal">0.00</td>
-                        </tr>
-                        <tr>
-                            <td style="border:1px solid black; text-align:right; padding:5px;">Less: Paid by Society:</td>
-                            <td style="border:1px solid black; text-align:right; padding:5px;" id="gfPaid">0.00</td>
-                        </tr>
-                        <tr>
-                            <td style="border:1px solid black; text-align:right; font-weight:bold; font-size:1.1em; padding:5px;">FAMILY TO PAY:</td>
-                            <td style="border:1px solid black; text-align:right; font-weight:bold; font-size:1.1em; padding:5px;" id="gfFamily">0.00</td>
-                        </tr>
+                        <tr><td style="text-align:right; font-weight:bold;">TOTAL:</td><td style="text-align:right;" id="gfTotal">0.00</td></tr>
+                        <tr><td style="text-align:right;">Society:</td><td style="text-align:right;" id="gfPaid">0.00</td></tr>
+                        <tr><td style="text-align:right; font-weight:bold;">BALANCE:</td><td style="text-align:right;" id="gfFamily">0.00</td></tr>
                     </tfoot>
                 </table>
             </div>
-
-            <!-- FOOTER NOTES -->
-            <div style="margin-top:10px; border:1px solid black; padding:10px; height:60px;">
-                <strong>Special Instructions:</strong> <span id="gfNotes"></span>
-            </div>
             
-            <div style="text-align:center; margin-top:20px; font-size:0.8em;">
-                <p>1409 Zone 15 Industrial Site Lethabile | Tel: 012 251 0000</p>
+            <div style="margin-top:10px; border:1px solid black; padding:5px;">
+                <strong>Notes:</strong> <span id="gfNotes"></span>
             </div>
         </div>
     </div>

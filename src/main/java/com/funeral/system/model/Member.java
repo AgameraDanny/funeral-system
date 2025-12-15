@@ -34,6 +34,7 @@ public class Member {
 
     private LocalDate dateOfBirth;
     private String sex; 
+    private String policyPlan; // e.g., "Plan A", "Gold", "Bronze"
     
     // To track if they have passed away
     private boolean isDeceased = false;

@@ -397,3 +397,35 @@ tr:hover { background-color: #f1f1f1; }
     max-height: 90vh; overflow-y: auto;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
+/* HIDE PRINT AREAS BY DEFAULT */
+.print-area {
+    display: none; 
+}
+
+/* WHEN PRINTING */
+@media print {
+    /* Hide the entire app interface */
+    #screen-content {
+        display: none;
+    }
+
+    /* Show only the active print area */
+    .print-area.print-active {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: white;
+        z-index: 9999;
+    }
+    
+    /* Ensure receipt boxes look like paper */
+    .receipt-box, .green-form-box {
+        border: 2px solid black;
+        padding: 20px;
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+}

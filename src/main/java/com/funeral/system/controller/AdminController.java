@@ -64,8 +64,6 @@ public class AdminController {
         return memberRepository.save(member);
     }
 
-    // --- FINANCE: CONTRIBUTIONS ---
-
 
     @PostMapping("/contribution")
     public ResponseEntity<?> payContribution(@RequestParam Long memberId, 
@@ -104,5 +102,53 @@ public class AdminController {
         // We will delegate to a new service method
         Funeral f = financeService.updateFuneralDetails(id, request);
         return ResponseEntity.ok(f);
+    }
+
+    // --- POLICY LOGIC ---
+    @GetMapping("/policy-cover")
+    public BigDecimal getPolicyCover(@RequestParam String plan) {
+        // Hardcoded logic based 
+        switch (plan.toUpperCase()) {
+            // Essential Covers (Image 5)
+            case "PLAN A": return new BigDecimal("10000");
+            case "PLAN B": return new BigDecimal("20000");
+            case "PLAN C": return new BigDecimal("30000");
+            case "PLAN D": return new BigDecimal("40000");
+            
+            // Group Scheme (Image 3)
+            case "BRONZE": return new BigDecimal("15000"); // Example value
+            case "SILVER": return new BigDecimal("20000");
+            case "GOLD":   return new BigDecimal("30000");
+            
+            default: return BigDecimal.ZERO;
+        }
+    }
+
+    @DeleteMapping("/member/{id}")
+    public ResponseEntity<?> deleteMember(@PathVariable Long id) {
+        try {
+            memberRepository.deleteById(id);
+            return ResponseEntity.ok("Member deleted");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Cannot delete member (might have linked records)");
+        }
+    }
+
+    @DeleteMapping("/funeral/{id}")
+    public ResponseEntity<?> deleteFuneral(@PathVariable Long id) {
+        funeralRepository.deleteById(id);
+        return ResponseEntity.ok("Funeral record deleted");
+    }
+
+    @DeleteMapping("/contribution/{id}")
+    public ResponseEntity<?> deleteContribution(@PathVariable Long id) {
+        // We must also reverse the balance effect on the Society
+        Contribution c = contributionRepository.findById(id).orElseThrow();
+        Society s = c.getSociety();
+        s.setCurrentBalance(s.getCurrentBalance().subtract(c.getAmount()));
+        societyRepository.save(s);
+        
+        contributionRepository.delete(c);
+        return ResponseEntity.ok("Contribution deleted and balance adjusted");
     }
 }
