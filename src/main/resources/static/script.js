@@ -80,7 +80,12 @@ async function viewSocietyDetails(society) {
                 ? `${m.primaryMember.firstName} ${m.primaryMember.lastName}` 
                 : '-';
 
-            memBody.innerHTML += `<tr><td>${m.idNumber}</td><td>${m.firstName} ${m.lastName}</td><td>${typeBadge}</td><td>${linkedName}</td><td>${statusBadge}</td></tr>`;
+            memBody.innerHTML += `<tr><td>${m.idNumber}</td><td>${m.firstName} ${m.lastName}</td>
+                <td>${typeBadge}</td><td>${linkedName}</td><td>${statusBadge}</td>
+                <td>
+                    <button class="danger-btn" style="padding:2px 5px;" onclick="deleteMember(${m.id})">🗑️</button>
+                </td>
+                </tr>`;
         });
     } else {
         memBody.innerHTML = '<tr><td colspan="5">No members found.</td></tr>';
@@ -160,12 +165,6 @@ function renderContributionsTable() {
         });
     }
     document.getElementById('totalContributions').innerText = `R ${total.toFixed(2)}`;
-}
-
-async function deleteContribution(id) {
-    if(!confirm("Are you sure? This will deduct the money from the Society Balance.")) return;
-    await fetch(`${API_BASE}/contribution/${id}`, { method: 'DELETE' });
-    loadSocietyContributions(currentSocietyId); // Refresh
 }
 
 function printHistoricalReceipt(contributionId) {
@@ -296,12 +295,59 @@ async function loadFuneralHistory() {
                     <button class="action-btn" title="Statement" style="padding:2px 5px;" onclick="printFuneralReceipt(${f.id})">🧾</button>
                     <button class="action-btn" title="Green Form" style="padding:2px 5px;" onclick="printGreenForm(${f.id})">📄</button>
                     <button class="action-btn" title="Edit Info" style="padding:2px 5px; background:#f39c12;" onclick="openEditFuneralModal(${f.id})">✏️</button>
+                    <button class="action-btn danger-btn" title="Delete Record" style="padding:2px 5px; background:#e74c3c;" onclick="deleteFuneral(${f.id})">🗑️</button>
                 </td>
             </tr>`;
         });
     } catch (e) { 
         console.error(e); 
         tbody.innerHTML = '<tr><td colspan="10">Error loading history.</td></tr>';
+    }
+}
+
+// --- DELETE FUNCTIONS ---
+
+async function deleteMember(id) {
+    if(!confirm("Are you sure you want to delete this member? \n\nWARNING: If they have contributions or funeral records, this might fail or cause data issues.")) return;
+
+    const res = await fetch(`${API_BASE}/member/${id}`, { method: 'DELETE' });
+    
+    if (res.ok) {
+        alert("Member deleted.");
+        // Refresh the view
+        loadSocieties(); // Reload society data to update the currentSocietyData object
+        // NOTE: In a real app, you might want to fetch specific society again
+        document.getElementById('society-details').classList.add('hidden-section'); // Close view to force refresh
+        showSection('dashboard');
+    } else {
+        const txt = await res.text();
+        alert("Error: " + txt);
+    }
+}
+
+async function deleteFuneral(id) {
+    if(!confirm("Are you sure? This will delete the funeral record permanently.")) return;
+
+    const res = await fetch(`${API_BASE}/funeral/${id}`, { method: 'DELETE' });
+
+    if (res.ok) {
+        alert("Funeral record deleted.");
+        loadFuneralHistory(); // Refresh table
+    } else {
+        alert("Error deleting funeral record.");
+    }
+}
+
+async function deleteContribution(id) {
+    if(!confirm("Are you sure? This will delete the receipt and DEDUCT the money back from the Society Balance.")) return;
+
+    const res = await fetch(`${API_BASE}/contribution/${id}`, { method: 'DELETE' });
+
+    if (res.ok) {
+        alert("Contribution deleted and balance adjusted.");
+        loadSocietyContributions(currentSocietyId); // Refresh table
+    } else {
+        alert("Error deleting contribution.");
     }
 }
 
