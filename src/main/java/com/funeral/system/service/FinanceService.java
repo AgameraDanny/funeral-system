@@ -72,8 +72,11 @@ public class FinanceService {
         BigDecimal balanceBefore = society.getCurrentBalance();
         BigDecimal societyContribution = request.getSocietyPays() != null ? request.getSocietyPays() : BigDecimal.ZERO;
 
+        // --- IMPROVED ERROR MESSAGE ---
         if (balanceBefore.compareTo(societyContribution) < 0) {
-            throw new RuntimeException("Insufficient Society Funds. Balance: " + balanceBefore);
+            throw new RuntimeException("Transaction Failed: Insufficient Society Funds. " +
+                    "Available: R" + balanceBefore + ", Required: R" + societyContribution + 
+                    ". Please add funds via 'Pay Premiums' first.");
         }
 
         // Deduct from Society
@@ -81,16 +84,10 @@ public class FinanceService {
         society.setCurrentBalance(balanceAfter);
         societyRepository.save(society);
 
-        // Update Member Bio Data (if provided in form)
-        if (request.getSex() != null && !request.getSex().isEmpty()) {
-            member.setSex(request.getSex());
-        }
-        if (request.getDateOfBirth() != null) {
-            member.setDateOfBirth(request.getDateOfBirth());
-        }
-        if (request.getAddress() != null && !request.getAddress().isEmpty()) {
-            member.setAddress(request.getAddress());
-        }
+        // Update Member Bio Data
+        if (request.getSex() != null && !request.getSex().isEmpty()) member.setSex(request.getSex());
+        if (request.getDateOfBirth() != null) member.setDateOfBirth(request.getDateOfBirth());
+        if (request.getAddress() != null && !request.getAddress().isEmpty()) member.setAddress(request.getAddress());
 
         member.setDeceased(true);
         member.setDateOfDeath(request.getDateOfDeath() != null ? request.getDateOfDeath() : LocalDate.now());
@@ -104,7 +101,6 @@ public class FinanceService {
         funeral.setPaidBySociety(societyContribution);
         funeral.setPaidByFamily(totalCost.subtract(societyContribution));
         
-        // --- MAP NEW FIELDS ---
         funeral.setBranchCode(request.getBranchCode());
         funeral.setCountryOfBirth(request.getCountryOfBirth());
         funeral.setOccupation(request.getOccupation());
@@ -119,7 +115,6 @@ public class FinanceService {
         funeral.setCauseOfDeath(request.getCauseOfDeath());
         funeral.setDateOfDeath(request.getDateOfDeath());
         
-        // Handle Funeral Date/Time
         if(request.getDateOfBurial() != null) {
             funeral.setFuneralDate(request.getDateOfBurial().atStartOfDay());
         } else {
@@ -139,7 +134,6 @@ public class FinanceService {
 
         Funeral savedFuneral = funeralRepository.save(funeral);
 
-        // Save Expenses
         if (request.getItems() != null) {
             for (FuneralRequest.ExpenseItem item : request.getItems()) {
                 FuneralExpense expense = new FuneralExpense();
@@ -158,7 +152,6 @@ public class FinanceService {
         Funeral funeral = funeralRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Funeral not found"));
 
-        // Update Bio & Logistics only
         funeral.setBranchCode(request.getBranchCode());
         funeral.setCountryOfBirth(request.getCountryOfBirth());
         funeral.setOccupation(request.getOccupation());
