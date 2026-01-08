@@ -353,7 +353,7 @@ function printGreenForm(id) {
         document.getElementById('gfSurname').innerText = f.deceasedMember.lastName;
         document.getElementById('gfFirstNames').innerText = f.deceasedMember.firstName;
         document.getElementById('gfIdNo').innerText = f.deceasedMember.idNumber;
-        document.getElementById('gfPlan').innerText = f.deceasedMember.policyPlan || "N/A";
+        // document.getElementById('gfPlan').innerText = f.deceasedMember.policyPlan || "N/A";
         document.getElementById('gfSex').innerText = f.deceasedMember.sex || "";
         document.getElementById('gfAddress').innerText = f.deceasedMember.address || "";
         document.getElementById('gfDOD').innerText = f.dateOfDeath || "";
