@@ -15,15 +15,19 @@
         }
         .dash-card {
             background: white;
-            padding: 20px;
+            padding: 25px;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             cursor: pointer;
             transition: transform 0.2s;
-            border-left: 5px solid #2c3e50;
+            border-left: 6px solid #2c3e50;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
-        .dash-card:hover { transform: translateY(-5px); }
-        .dash-card h3 { margin-top: 0; color: #2c3e50; }
+        .dash-card:hover { transform: translateY(-5px); border-left-color: #3498db; }
+        .dash-card h3 { margin-top: 0; color: #2c3e50; font-size: 1.2rem; }
+        .dash-card p { color: #7f8c8d; font-size: 0.9rem; margin-bottom: 0; }
         .nav-separator { color: white; padding: 0 10px; opacity: 0.5; }
         
         /* TABLE ACTION BUTTONS */
@@ -40,71 +44,79 @@
             <nav>
                 <button onclick="showSection('dashboard')">Home</button>
                 <div class="nav-separator">|</div>
-                <button onclick="showSection('add-society')">Burial Societies</button>
-                <button onclick="showSection('contributions')">Pay Premiums</button>
+                <button onclick="showSection('add-society')">Societies</button>
+                <button onclick="showSection('contributions')">Payments</button>
                 <div class="nav-separator">|</div>
-                <button onclick="showSection('add-member')">New Policy/Member</button>
-                <button onclick="showSection('funerals')">Arrangements & Claims</button>
+                <button onclick="showSection('add-member')">New Member</button>
+                <button onclick="showSection('funerals')">Arrangements</button>
                 <button onclick="showSection('history')">History</button>
             </nav>
         </header>
 
         <main id="app">
             
-            <!-- 1. DASHBOARD SECTION -->
+            <!-- 1. DASHBOARD SECTION (UPDATED LABELS) -->
             <section id="dashboard" class="active-section">
                 <h2>Dashboard Overview</h2>
                 <div class="dashboard-grid">
+                    
+                    <!-- OPTION 1: Funeral Policy -->
+                    <div class="dash-card" onclick="showSection('add-member')">
+                        <h3>📄 Funeral Policy</h3>
+                        <p>Register New Members & Assign Plans</p>
+                    </div>
+
+                    <!-- OPTION 2: Funeral Cover & Society -->
                     <div class="dash-card" onclick="showSection('add-society')">
-                        <h3>👥 Burial Societies</h3>
+                        <h3>👥 Funeral Cover & Society</h3>
                         <p>Manage Groups, Savings & Balances</p>
                     </div>
-                    <div class="dash-card" onclick="showSection('add-member')">
-                        <h3>📄 Funeral Policies</h3>
-                        <p>Register Members & Plans (Gold/Silver/Etc)</p>
-                    </div>
+
+                    <!-- OPTION 3: Funeral Arrangements -->
                     <div class="dash-card" onclick="showSection('funerals')">
                         <h3>⚱️ Funeral Arrangements</h3>
-                        <p>Logistics, Green Form & Processing Claims</p>
+                        <p>Logistics, Green Form & Claims</p>
                     </div>
+
+                    <!-- OPTION 4: Payments (Kept for functionality) -->
                     <div class="dash-card" onclick="showSection('contributions')">
-                        <h3>💰 Premiums</h3>
-                        <p>Record Monthly Payments & Print Slips</p>
+                        <h3>💰 Make Payment</h3>
+                        <p>Record Premiums & Contributions</p>
                     </div>
                 </div>
                 
-                <h3>Active Societies Overview</h3>
+                <h3>Active Societies & Groups</h3>
                 <div id="society-cards" class="card-container">
-                    <p>Loading societies...</p>
+                    <p>Loading...</p>
                 </div>
             </section>
 
             <!-- 2. ADD SOCIETY -->
             <section id="add-society" class="hidden-section">
-                <h2>Create New Society / Group</h2>
+                <h2>Create Funeral Cover / Society Group</h2>
                 <form id="societyForm">
-                    <label>Society Name:</label>
+                    <label>Group / Society Name:</label>
                     <input type="text" id="societyName" required>
                     <label>Account Number:</label>
                     <input type="text" id="societyAccNo" placeholder="e.g. 76545" required>
                     <label>Initial Balance:</label>
                     <input type="number" id="societyBalance" value="0">
-                    <button type="submit">Create Society</button>
+                    <button type="submit">Create Group</button>
                 </form>
             </section>
 
-            <!-- 3. SOCIETY DETAILS (With Delete Options) -->
+            <!-- 3. SOCIETY DETAILS -->
             <section id="society-details" class="hidden-section">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <button class="back-btn" onclick="showSection('dashboard')">← Back to Dashboard</button>
-                    <button class="action-btn" onclick="toggleEditSociety()">✏️ Edit Society Details</button>
+                    <button class="action-btn" onclick="toggleEditSociety()">✏️ Edit Details</button>
                 </div>
 
-                <h2 id="detailTitle">Society Details</h2>
+                <h2 id="detailTitle">Details</h2>
 
                 <!-- Edit Form -->
                 <div id="editSocietyContainer" style="display:none; background:#eee; padding:15px; border-radius:8px; margin-bottom:20px;">
-                    <h3>Update Society Info</h3>
+                    <h3>Update Info</h3>
                     <form id="updateSocietyForm">
                         <input type="hidden" id="editSocietyId">
                         <label>Name:</label>
@@ -128,7 +140,7 @@
 
                 <div class="table-wrapper">
                     <div class="header-row">
-                        <h3>💰 Premium History</h3>
+                        <h3>💰 Payment History</h3>
                         <div class="totals-display">Total: <span id="totalContributions">0.00</span></div>
                     </div>
                     <table>
@@ -140,7 +152,7 @@
 
             <!-- 4. ADD MEMBER / POLICY -->
             <section id="add-member" class="hidden-section">
-                <h2>Register New Policy / Member</h2>
+                <h2>Register New Funeral Policy / Member</h2>
                 <form id="memberForm">
                     <label>First Name:</label>
                     <input type="text" id="memFirstName" required>
@@ -152,8 +164,8 @@
                     <label>Assign to Group/Society:</label>
                     <select id="memSocietySelect" required></select>
 
-                    <!-- NEW: POLICY PLAN SELECTION -->
-                    <label>Select Cover Plan (Policy):</label>
+                    <!-- POLICY PLAN SELECTION -->
+                    <label>Select Funeral Policy Plan:</label>
                     <select id="memPolicy">
                         <option value="None">None (Society Only)</option>
                         <option value="Plan A">Plan A (Essential - R10k)</option>
@@ -176,7 +188,7 @@
                         <select id="linkedPrimaryMember"></select>
                     </div>
 
-                    <button type="submit">Register Policy</button>
+                    <button type="submit">Register</button>
                 </form>
             </section>
 
@@ -212,7 +224,6 @@
                         <form id="funeralForm">
                             <div class="info-box" id="budgetDisplay">Society Balance: R 0.00</div>
                             <label>Select Deceased Member:</label>
-                            <!-- Triggers auto-calculation of policy cover -->
                             <select id="funeralMemberSelect" onchange="updateFuneralFormDetails()" required></select>
 
                             <!-- GREEN FORM DATA -->
@@ -326,7 +337,6 @@
                             <input type="text" id="efBranch" placeholder="Branch">
                             <input type="text" id="efCountry" placeholder="Country">
                         </div>
-                        <!-- Simplified for brevity, add other fields as needed -->
                         <div class="row">
                             <input type="text" id="efCemetery" placeholder="Cemetery">
                             <input type="text" id="efGraveNo" placeholder="Grave No">
@@ -350,7 +360,7 @@
         <div class="receipt-box">
             <div class="receipt-header">
                 <h2>Boikanyo's Funeral Home</h2>
-                <h3>Premium Receipt</h3>
+                <h3>Payment Receipt</h3>
                 <p><strong>FSP No: 3886</strong> | Reg: CK1997/031585/23</p>
                 <p>1409 Zone 15 Industrial Site Lethabile | Tel: 012 251 0000</p>
             </div>
@@ -361,7 +371,11 @@
                 <div class="grid-box"><strong>Method:</strong> <span id="recMethod"></span></div>
                 
                 <div class="grid-box full-width"><strong>Received From:</strong> <span id="recMember"></span></div>
-                <div class="grid-box full-width"><strong>Society / Group:</strong> <span id="recSociety"></span></div>
+                
+                <!-- DYNAMIC LABEL FOR PAYMENT TYPE -->
+                <div class="grid-box full-width" style="background:#f9f9f9;">
+                    <strong id="recPaymentLabel">Payment For:</strong> <span id="recPaymentContext"></span>
+                </div>
                 
                 <div class="grid-box full-width" style="font-size:1.2em; padding:15px;">
                     <strong>Amount Paid:</strong> <span id="recAmount"></span>
@@ -370,7 +384,7 @@
                 <div class="grid-box full-width words-box"><span id="recWords"></span></div>
             </div>
             <div class="receipt-footer">
-                <div class="balance-row"><strong>Society Balance:</strong> <div class="balance-box" id="recBalance"></div></div>
+                <div class="balance-row"><strong>Current Balance:</strong> <div class="balance-box" id="recBalance"></div></div>
                 <p style="text-align:center; font-size:0.8em; margin-top:10px;">Thank you for your payment.</p>
             </div>
         </div>
