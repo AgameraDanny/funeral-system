@@ -123,56 +123,70 @@ function printHistoricalReceipt(id) {
     if(c) generateReceipt(c);
 }
 
-// 1. GREEN FORM PRINT (Fixed Next of Kin)
 function printGreenForm(id) {
     const f = currentFuneralHistory.find(x => x.id === id);
     if(!f) return;
+
+    // Set UI State
     document.getElementById('receipt-print-area').classList.remove('print-active');
     document.getElementById('funeral-print-area').classList.remove('print-active');
     document.getElementById('green-form-print-area').classList.add('print-active');
 
+    // Header info
     document.getElementById('gfDate').innerText = new Date().toLocaleDateString();
     document.getElementById('gfId').innerText = "F-" + f.id;
     
-    // Member Details
+    // 1. BIO DETAILS
     if(f.deceasedMember) {
-        document.getElementById('gfSurname').innerText = f.deceasedMember.lastName;
-        document.getElementById('gfFirstNames').innerText = f.deceasedMember.firstName;
-        document.getElementById('gfIdNo').innerText = f.deceasedMember.idNumber;
-        document.getElementById('gfSex').innerText = f.deceasedMember.sex || "";
-        document.getElementById('gfAddress').innerText = f.deceasedMember.address || "";
-        document.getElementById('gfDOD').innerText = f.dateOfDeath || "";
+        document.getElementById('gfSurname').innerText = f.deceasedMember.lastName || "N/A";
+        document.getElementById('gfFirstNames').innerText = f.deceasedMember.firstName || "N/A";
+        document.getElementById('gfIdNo').innerText = f.deceasedMember.idNumber || "N/A";
+        document.getElementById('gfAddress').innerText = f.deceasedMember.address || f.address || "N/A";
     }
-    
-    // Funeral Logistics
-    document.getElementById('gfCause').innerText = f.causeOfDeath || "";
-    document.getElementById('gfBurialDate').innerText = f.funeralDate ? new Date(f.funeralDate).toLocaleDateString() : "";
-    document.getElementById('gfTime').innerText = f.timeOfBurial || "";
-    document.getElementById('gfCemetery').innerText = f.cemetery || "";
-    document.getElementById('gfGrave').innerText = f.graveNumber || "";
+    document.getElementById('gfBranch').innerText = f.branchCode || "1000";
+    document.getElementById('gfCountry').innerText = f.countryOfBirth || "RSA";
+    document.getElementById('gfSex').innerText = f.sex || "N/A";
+    document.getElementById('gfMarital').innerText = f.maritalStatus || "N/A";
+    document.getElementById('gfDob').innerText = f.dateOfBirth || "N/A";
+    document.getElementById('gfOccupation').innerText = f.occupation || "N/A";
+
+    // 2. DEATH INFO
+    document.getElementById('gfDOD').innerText = f.dateOfDeath || "N/A";
+    document.getElementById('gfPlaceDeath').innerText = f.placeOfDeath || "N/A";
+    document.getElementById('gfCause').innerText = f.causeOfDeath || "N/A";
+    document.getElementById('gfDoctor').innerText = f.doctorName || "N/A";
+    document.getElementById('gfNextOfKin').innerText = f.nextOfKin || "N/A";
+
+    // 3. LOGISTICS
+    document.getElementById('gfBurialDate').innerText = f.funeralDate ? new Date(f.funeralDate).toLocaleDateString() : (f.dateOfBurial || "N/A");
+    document.getElementById('gfTime').innerText = f.timeOfBurial || "N/A";
+    document.getElementById('gfReligion').innerText = f.religion || "N/A";
+    document.getElementById('gfMinister').innerText = f.minister || "N/A";
+    document.getElementById('gfCemetery').innerText = f.cemetery || "N/A";
+    document.getElementById('gfGrave').innerText = f.graveNumber || f.graveNo || "N/A";
+    document.getElementById('gfGraveType').innerText = f.graveType || "N/A";
     document.getElementById('gfHearse').innerText = f.hearseRequired ? "Yes" : "No";
     document.getElementById('gfCar').innerText = f.mournersCarRequired ? "Yes" : "No";
-    document.getElementById('gfNotes').innerText = f.specialInstructions || "";
+    document.getElementById('gfNotes').innerText = f.specialInstructions || f.instructions || "None";
 
-    // *** Show Next of Kin ***
-    // We assume nextOfKin was saved directly on the Funeral object
-    // If not, we might need to check the Member object too, but your backend code saves it to Funeral.
-    const nextKinInfo = f.nextOfKin || "N/A";
-    // We append this to the Notes section or a specific area if your Green Form HTML has one. 
-    // Since the provided HTML template for Green Form doesn't have a dedicated 'Next of Kin' box in the grid:
-    // I will append it to the Notes section for visibility.
-    document.getElementById('gfNotes').innerText = `Next of Kin: ${nextKinInfo}\n` + (f.specialInstructions || "");
-
+    // 4. FINANCIALS
     const tbody = document.getElementById('gfExpenseBody');
     tbody.innerHTML = '';
-    f.expenses.forEach(e => {
-        tbody.innerHTML += `<tr><td>${e.itemName}</td><td style="text-align:right">R ${e.cost.toFixed(2)}</td></tr>`;
-    });
+    if (f.expenses && f.expenses.length > 0) {
+        f.expenses.forEach(e => {
+            tbody.innerHTML += `<tr><td style="padding:5px; border-bottom:1px solid #eee;">${e.itemName}</td><td style="text-align:right; padding:5px; border-bottom:1px solid #eee;">R ${e.cost.toFixed(2)}</td></tr>`;
+        });
+    }
+
     document.getElementById('gfTotal').innerText = `R ${f.totalCost.toFixed(2)}`;
     document.getElementById('gfPaid').innerText = `R ${f.paidBySociety.toFixed(2)}`;
     document.getElementById('gfFamily').innerText = `R ${f.paidByFamily.toFixed(2)}`;
     
-    setTimeout(() => { window.print(); document.getElementById('green-form-print-area').classList.remove('print-active'); }, 200);
+    // Trigger Print
+    setTimeout(() => { 
+        window.print(); 
+        document.getElementById('green-form-print-area').classList.remove('print-active'); 
+    }, 500);
 }
 
 // 2. STATEMENT PRINT (Fixed Deceased Name)

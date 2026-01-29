@@ -422,51 +422,87 @@
     </div>
 
     <!-- ============================================== -->
-    <!--  PRINT TEMPLATE 3: GREEN FORM (Logistics)      -->
+    <!--  PRINT TEMPLATE 3: GREEN FORM (Comprehensive)  -->
     <!-- ============================================== -->
     <div id="green-form-print-area" class="print-area">
-        <div class="green-form-box">
-            <div class="green-header">
-                <h2>BOIKANYO'S FUNERAL HOME</h2>
-                <p><strong>FSP: 3886</strong></p>
-                <div style="text-align:right;">
-                    <span>Date: <span id="gfDate"></span></span><br>
-                    <span>No: <span id="gfId"></span></span>
+        <div class="green-form-box" style="font-family: Arial, sans-serif; border: 2px solid #000; padding: 20px; width: 800px; margin: auto;">
+            <div class="green-header" style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px;">
+                <h1 style="margin: 0;">BOIKANYO'S FUNERAL HOME</h1>
+                <p style="margin: 5px 0;"><strong>FSP: 3886</strong></p>
+                <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                    <span><strong>Date:</strong> <span id="gfDate"></span></span>
+                    <span><strong>Ref No:</strong> <span id="gfId"></span></span>
                 </div>
             </div>
 
-            <!-- BIO -->
-            <div class="green-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:5px; border:1px solid black; padding:5px;">
+            <!-- SECTION 1: BIO DETAILS -->
+            <h4 style="margin: 10px 0 5px 0; background: #eee; padding: 5px;">I. BIO DETAILS</h4>
+            <div class="green-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; border: 1px solid #ccc; padding: 10px; font-size: 0.9em;">
                 <div><strong>Surname:</strong> <span id="gfSurname"></span></div>
                 <div><strong>First Names:</strong> <span id="gfFirstNames"></span></div>
-                <div><strong>ID:</strong> <span id="gfIdNo"></span></div>
+                <div><strong>ID Number:</strong> <span id="gfIdNo"></span></div>
+                
+                <div><strong>Branch Code:</strong> <span id="gfBranch"></span></div>
+                <div><strong>Country:</strong> <span id="gfCountry"></span></div>
                 <div><strong>Sex:</strong> <span id="gfSex"></span></div>
-                <div><strong>Address:</strong> <span id="gfAddress"></span></div>
-                <div><strong>DOD:</strong> <span id="gfDOD"></span></div>
-                <div><strong>Cause:</strong> <span id="gfCause"></span></div>
+                
+                <div><strong>Marital Status:</strong> <span id="gfMarital"></span></div>
+                <div><strong>Date of Birth:</strong> <span id="gfDob"></span></div>
+                <div><strong>Occupation:</strong> <span id="gfOccupation"></span></div>
+                
+                <div style="grid-column: span 3;"><strong>Residential Address:</strong> <span id="gfAddress"></span></div>
             </div>
 
-            <!-- LOGISTICS -->
-            <div class="green-grid" style="margin-top:10px; border:1px solid black; padding:5px;">
-                <div><strong>Burial:</strong> <span id="gfBurialDate"></span> @ <span id="gfTime"></span></div>
-                <div><strong>Cemetery:</strong> <span id="gfCemetery"></span> <strong>Grave:</strong> <span id="gfGrave"></span></div>
-                <div><strong>Hearse:</strong> <span id="gfHearse"></span> <strong>Car:</strong> <span id="gfCar"></span></div>
+            <!-- SECTION 2: DEATH INFO -->
+            <h4 style="margin: 15px 0 5px 0; background: #eee; padding: 5px;">II. DEATH INFO</h4>
+            <div class="green-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border: 1px solid #ccc; padding: 10px; font-size: 0.9em;">
+                <div><strong>Date of Death:</strong> <span id="gfDOD"></span></div>
+                <div><strong>Place of Death:</strong> <span id="gfPlaceDeath"></span></div>
+                <div><strong>Cause of Death:</strong> <span id="gfCause"></span></div>
+                <div><strong>Attending Doctor:</strong> <span id="gfDoctor"></span></div>
+                <div style="grid-column: span 2;"><strong>Next of Kin:</strong> <span id="gfNextOfKin"></span></div>
+            </div>
+
+            <!-- SECTION 3: LOGISTICS -->
+            <h4 style="margin: 15px 0 5px 0; background: #eee; padding: 5px;">III. FUNERAL LOGISTICS</h4>
+            <div class="green-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; border: 1px solid #ccc; padding: 10px; font-size: 0.9em;">
+                <div><strong>Burial Date:</strong> <span id="gfBurialDate"></span></div>
+                <div><strong>Time:</strong> <span id="gfTime"></span></div>
+                <div><strong>Religion:</strong> <span id="gfReligion"></span></div>
+                
+                <div><strong>Minister:</strong> <span id="gfMinister"></span></div>
+                <div><strong>Cemetery:</strong> <span id="gfCemetery"></span></div>
+                <div><strong>Grave No:</strong> <span id="gfGrave"></span></div>
+                
+                <div><strong>Grave Type:</strong> <span id="gfGraveType"></span></div>
+                <div><strong>Hearse:</strong> <span id="gfHearse"></span></div>
+                <div><strong>Mourner's Car:</strong> <span id="gfCar"></span></div>
             </div>
 
             <!-- FINANCIAL SUMMARY -->
-            <div style="margin-top:15px; border:2px solid black;">
-                <table style="width:100%; border-collapse:collapse;">
-                    <thead style="background:#eee;"><tr><th style="text-align:left;">Item</th><th style="text-align:right;">Cost</th></tr></thead>
+            <h4 style="margin: 15px 0 5px 0; background: #eee; padding: 5px;">IV. FINANCIAL SUMMARY</h4>
+            <div style="border: 1px solid #000;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
+                    <thead style="background: #f2f2f2;">
+                        <tr><th style="text-align: left; padding: 5px; border-bottom: 1px solid #000;">Description</th><th style="text-align: right; padding: 5px; border-bottom: 1px solid #000;">Amount</th></tr>
+                    </thead>
                     <tbody id="gfExpenseBody"></tbody>
-                    <tfoot>
-                        <tr><td style="text-align:right;">Total:</td><td style="text-align:right;" id="gfTotal"></td></tr>
-                        <tr><td style="text-align:right;">Less Policy:</td><td style="text-align:right;" id="gfPaid"></td></tr>
-                        <tr><td style="text-align:right; font-weight:bold;">Balance:</td><td style="text-align:right;" id="gfFamily"></td></tr>
+                    <tfoot style="font-weight: bold;">
+                        <tr><td style="text-align: right; padding: 5px;">Total Funeral Cost:</td><td style="text-align: right; padding: 5px;" id="gfTotal"></td></tr>
+                        <tr><td style="text-align: right; padding: 5px;">Less Policy Cover/Society Paid:</td><td style="text-align: right; padding: 5px;" id="gfPaid"></td></tr>
+                        <tr style="font-size: 1.1em; border-top: 2px solid #000;"><td style="text-align: right; padding: 5px;">BALANCE (Family to Pay):</td><td style="text-align: right; padding: 5px;" id="gfFamily"></td></tr>
                     </tfoot>
                 </table>
             </div>
-            <div style="margin-top:10px; border:1px solid black; padding:5px;">
-                <strong>Notes:</strong> <span id="gfNotes"></span>
+
+            <div style="margin-top: 15px; border: 1px solid #ccc; padding: 10px; font-size: 0.85em;">
+                <strong>Special Instructions/Notes:</strong><br>
+                <span id="gfNotes"></span>
+            </div>
+
+            <div style="margin-top: 40px; display: flex; justify-content: space-between; font-size: 0.8em;">
+                <div style="border-top: 1px solid #000; width: 200px; text-align: center;">Family Representative Signature</div>
+                <div style="border-top: 1px solid #000; width: 200px; text-align: center;">Authorized Official Signature</div>
             </div>
         </div>
     </div>
