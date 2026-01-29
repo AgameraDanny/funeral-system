@@ -100,6 +100,10 @@ public class FinanceService {
         funeral.setTotalCost(totalCost);
         funeral.setPaidBySociety(societyContribution);
         funeral.setPaidByFamily(totalCost.subtract(societyContribution));
+
+        funeral.setSex(request.getSex());
+        funeral.setDateOfBirth(request.getDateOfBirth());
+        funeral.setAddress(request.getAddress());
         
         funeral.setBranchCode(request.getBranchCode());
         funeral.setCountryOfBirth(request.getCountryOfBirth());

@@ -44,6 +44,9 @@ public class Funeral {
     private String placeOfDeath;
     private String placeOfBurial;
     private String causeOfDeath;
+    private String sex;          
+    private LocalDate dateOfBirth; 
+    private String address;   
 
     // Dates & Times
     private LocalDateTime funeralDate; // Acts as Date of Burial
