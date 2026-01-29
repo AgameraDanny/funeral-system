@@ -100,9 +100,7 @@ function generateReceipt(c) {
     document.getElementById('recMethod').innerText = c.paymentMethod || "Cash";
     document.getElementById('recDate').innerText = new Date(c.paymentDate).toLocaleDateString();
     
-    // --- UPDATED LOGIC FOR "FUNERAL POLICY" vs "FUNERAL COVER & SOCIETY" ---
-    // If user has a Policy Plan (Plan A, B etc), show "Funeral Policy"
-    // Otherwise show "Funeral Cover & Society" + Group Name
+    // Updated Logic for Plan vs Society
     const plan = c.member.policyPlan;
     if(plan && plan !== "None") {
         document.getElementById('recPaymentLabel').innerText = "Payment For:";
@@ -125,7 +123,7 @@ function printHistoricalReceipt(id) {
     if(c) generateReceipt(c);
 }
 
-// 1. GREEN FORM PRINT
+// 1. GREEN FORM PRINT (Fixed Next of Kin)
 function printGreenForm(id) {
     const f = currentFuneralHistory.find(x => x.id === id);
     if(!f) return;
@@ -135,6 +133,8 @@ function printGreenForm(id) {
 
     document.getElementById('gfDate').innerText = new Date().toLocaleDateString();
     document.getElementById('gfId').innerText = "F-" + f.id;
+    
+    // Member Details
     if(f.deceasedMember) {
         document.getElementById('gfSurname').innerText = f.deceasedMember.lastName;
         document.getElementById('gfFirstNames').innerText = f.deceasedMember.firstName;
@@ -143,6 +143,9 @@ function printGreenForm(id) {
         document.getElementById('gfAddress').innerText = f.deceasedMember.address || "";
         document.getElementById('gfDOD').innerText = f.dateOfDeath || "";
     }
+    
+    // Funeral Logistics
+    document.getElementById('gfCause').innerText = f.causeOfDeath || "";
     document.getElementById('gfBurialDate').innerText = f.funeralDate ? new Date(f.funeralDate).toLocaleDateString() : "";
     document.getElementById('gfTime').innerText = f.timeOfBurial || "";
     document.getElementById('gfCemetery').innerText = f.cemetery || "";
@@ -150,6 +153,15 @@ function printGreenForm(id) {
     document.getElementById('gfHearse').innerText = f.hearseRequired ? "Yes" : "No";
     document.getElementById('gfCar').innerText = f.mournersCarRequired ? "Yes" : "No";
     document.getElementById('gfNotes').innerText = f.specialInstructions || "";
+
+    // *** Show Next of Kin ***
+    // We assume nextOfKin was saved directly on the Funeral object
+    // If not, we might need to check the Member object too, but your backend code saves it to Funeral.
+    const nextKinInfo = f.nextOfKin || "N/A";
+    // We append this to the Notes section or a specific area if your Green Form HTML has one. 
+    // Since the provided HTML template for Green Form doesn't have a dedicated 'Next of Kin' box in the grid:
+    // I will append it to the Notes section for visibility.
+    document.getElementById('gfNotes').innerText = `Next of Kin: ${nextKinInfo}\n` + (f.specialInstructions || "");
 
     const tbody = document.getElementById('gfExpenseBody');
     tbody.innerHTML = '';
@@ -159,10 +171,11 @@ function printGreenForm(id) {
     document.getElementById('gfTotal').innerText = `R ${f.totalCost.toFixed(2)}`;
     document.getElementById('gfPaid').innerText = `R ${f.paidBySociety.toFixed(2)}`;
     document.getElementById('gfFamily').innerText = `R ${f.paidByFamily.toFixed(2)}`;
+    
     setTimeout(() => { window.print(); document.getElementById('green-form-print-area').classList.remove('print-active'); }, 200);
 }
 
-// 2. STATEMENT PRINT
+// 2. STATEMENT PRINT (Fixed Deceased Name)
 function printFuneralReceipt(id) {
     const f = currentFuneralHistory.find(x => x.id === id);
     if (!f) return;
@@ -174,8 +187,13 @@ function printFuneralReceipt(id) {
     const dateObj = new Date(f.funeralDate);
     document.getElementById('funDate').innerText = dateObj.toLocaleDateString();
     document.getElementById('funRef').innerText = "F-" + f.id;
-    document.getElementById('funDeceased').innerText = f.deceasedMember ? `${f.deceasedMember.firstName} ${f.deceasedMember.lastName}` : "Unknown";
-    document.getElementById('funSociety').innerText = f.society.name;
+    
+    // *** FIX: Correctly access Deceased Name & Society ***
+    const deceasedName = f.deceasedMember ? `${f.deceasedMember.firstName} ${f.deceasedMember.lastName}` : "Unknown";
+    const societyName = f.society ? f.society.name : "Unknown";
+    
+    document.getElementById('funDeceased').innerText = deceasedName;
+    document.getElementById('funSociety').innerText = societyName;
     document.getElementById('funGrave').innerText = f.graveNumber || "-";
 
     document.getElementById('funTotal').innerText = `R ${f.totalCost.toFixed(2)}`;
@@ -210,10 +228,12 @@ async function loadFuneralHistory() {
     
     currentFuneralHistory.forEach(f => {
         const name = f.deceasedMember ? `${f.deceasedMember.firstName} ${f.deceasedMember.lastName}` : 'Unknown';
+        const socName = f.society ? f.society.name : '-';
+        
         tbody.innerHTML += `<tr>
             <td>${new Date(f.funeralDate).toLocaleDateString()}</td>
             <td>${name}</td>
-            <td>${f.society.name}</td>
+            <td>${socName}</td>
             <td>R ${f.totalCost.toFixed(2)}</td>
             <td>R ${f.paidBySociety.toFixed(2)}</td>
             <td>R ${f.paidByFamily.toFixed(2)}</td>
