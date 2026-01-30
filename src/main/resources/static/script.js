@@ -113,7 +113,7 @@ function generateReceipt(c) {
     document.getElementById('recMember').innerText = `${c.member.firstName} ${c.member.lastName}`;
     document.getElementById('recAmount').innerText = `R ${c.amount.toFixed(2)}`;
     document.getElementById('recBalance').innerText = `R ${c.society.currentBalance.toFixed(2)}`;
-    document.getElementById('recWords').innerText = numberToWords(c.amount) + " Rands Only";
+    document.getElementById('recWords').innerText = numberToWords(c.amount) + " Only";
     
     setTimeout(() => { window.print(); document.getElementById('receipt-print-area').classList.remove('print-active'); }, 200);
 }
